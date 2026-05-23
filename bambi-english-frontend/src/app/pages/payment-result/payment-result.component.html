@@ -1,0 +1,57 @@
+<div class="min-h-screen flex items-center justify-center px-4">
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="text-center">
+    <div class="w-16 h-16 border-4 border-[#ae2070] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    <p class="text-gray-500">Đang xác nhận kết quả thanh toán...</p>
+  </div>
+
+  <!-- Thành công -->
+  <div *ngIf="!loading() && isSuccess()"
+       class="bg-white rounded-2xl shadow-xl p-10 text-center max-w-sm w-full">
+    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="text-4xl">🎉</span>
+    </div>
+    <h1 class="text-2xl font-black font-display text-bambi-green mb-2">
+      Thanh toán thành công!
+    </h1>
+    <p class="text-gray-500 mb-2">
+      Chúc mừng <strong>{{ statusData()?.studentName }}</strong> đã đăng ký khóa học tại Bambi English.
+    </p>
+    <p class="text-gray-400 text-sm mb-1">Mã đơn: <span class="font-mono font-bold text-gray-600">{{ orderId }}</span></p>
+    <p *ngIf="statusData()?.momoTransId" class="text-gray-400 text-sm mb-6">
+      Mã giao dịch MoMo: <span class="font-mono font-bold text-[#ae2070]">{{ statusData()?.momoTransId }}</span>
+    </p>
+    <p class="text-gray-500 text-sm mb-6">Chúng tôi sẽ liên hệ xác nhận lịch học sớm nhất!</p>
+    <a routerLink="/"
+       class="inline-block bg-bambi-orange text-white font-bold px-6 py-3 rounded-full hover:bg-orange-600 transition-colors">
+      Về trang chủ
+    </a>
+  </div>
+
+  <!-- Thất bại -->
+  <div *ngIf="!loading() && isFailed()"
+       class="bg-white rounded-2xl shadow-xl p-10 text-center max-w-sm w-full">
+    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="text-4xl">❌</span>
+    </div>
+    <h1 class="text-2xl font-black font-display text-red-500 mb-2">
+      Thanh toán thất bại
+    </h1>
+    <p class="text-gray-500 mb-2">{{ message || 'Giao dịch không thành công hoặc đã bị hủy.' }}</p>
+    <p *ngIf="orderId" class="text-gray-400 text-sm mb-6">
+      Mã đơn: <span class="font-mono">{{ orderId }}</span>
+    </p>
+    <div class="flex flex-col gap-3">
+      <a routerLink="/"
+         class="inline-block bg-[#ae2070] text-white font-bold px-6 py-3 rounded-full hover:bg-[#8f1a5c] transition-colors">
+        Chọn khóa học khác
+      </a>
+      <a routerLink="/"
+         class="inline-block text-gray-500 underline text-sm">
+        Về trang chủ
+      </a>
+    </div>
+  </div>
+
+</div>

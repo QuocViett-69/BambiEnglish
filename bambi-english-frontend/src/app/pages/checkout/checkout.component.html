@@ -1,0 +1,78 @@
+<div class="max-w-lg mx-auto px-4 py-12">
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h1 class="text-2xl font-black font-display text-gray-800 mb-2">📋 Đăng ký khóa học</h1>
+
+    <!-- Course Summary -->
+    <div *ngIf="course()" class="bg-bambi-light rounded-xl p-4 mb-6">
+      <p class="text-sm text-gray-500 mb-1">Khóa học đã chọn:</p>
+      <p class="font-bold text-gray-800">{{ course()!.title }}</p>
+      <p class="text-bambi-orange font-black mt-1">{{ formatPrice(course()!.price) }} / tháng</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+      <!-- Student Name -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Họ tên học sinh *</label>
+        <input
+          formControlName="studentName"
+          type="text"
+          placeholder="Ví dụ: Nguyễn Bảo An"
+          class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-bambi-orange"
+          [class.border-red-400]="f['studentName'].invalid && f['studentName'].touched"
+        />
+        <p *ngIf="f['studentName'].invalid && f['studentName'].touched"
+           class="text-red-500 text-xs mt-1">
+          Vui lòng nhập tên học sinh (ít nhất 2 ký tự)
+        </p>
+      </div>
+
+      <!-- Parent Phone -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Số điện thoại phụ huynh *</label>
+        <input
+          formControlName="parentPhone"
+          type="tel"
+          placeholder="Ví dụ: 0901234567"
+          class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-bambi-orange"
+          [class.border-red-400]="f['parentPhone'].invalid && f['parentPhone'].touched"
+        />
+        <p *ngIf="f['parentPhone'].invalid && f['parentPhone'].touched"
+           class="text-red-500 text-xs mt-1">
+          Số điện thoại không hợp lệ (định dạng VN: 09x, 08x, 07x, 03x, 05x)
+        </p>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        [disabled]="form.invalid || loading()"
+        class="w-full bg-[#ae2070] text-white font-bold py-4 rounded-xl text-lg
+               hover:bg-[#8f1a5c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+               flex items-center justify-center gap-2"
+      >
+        <span *ngIf="!loading()" class="flex items-center gap-2">
+          <!-- MoMo logo SVG mini -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="12" fill="white"/>
+            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                  font-size="9" font-weight="bold" fill="#ae2070">MoMo</text>
+          </svg>
+          Thanh toán qua MoMo
+        </span>
+        <span *ngIf="loading()" class="flex items-center gap-2">
+          <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          Đang kết nối MoMo...
+        </span>
+      </button>
+
+      <p class="text-center text-xs text-gray-400 mt-2">
+        🔒 Thanh toán an toàn qua cổng MoMo Sandbox (môi trường test)
+      </p>
+    </form>
+  </div>
+</div>

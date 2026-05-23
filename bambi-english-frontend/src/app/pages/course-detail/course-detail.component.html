@@ -1,0 +1,24 @@
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <div *ngIf="loading()" class="flex justify-center py-20">
+    <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <div *ngIf="course() && !loading()" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <img [src]="course()!.imageUrl" [alt]="course()!.title" class="w-full h-64 object-cover" />
+    <div class="p-8">
+      <a routerLink="/" class="text-bambi-orange text-sm hover:underline">← Quay lại</a>
+      <h1 class="text-3xl font-black font-display mt-3 mb-4 text-gray-800">{{ course()!.title }}</h1>
+      <p class="text-gray-600 mb-6 leading-relaxed">{{ course()!.shortDescription }}</p>
+
+      <div class="bg-bambi-light rounded-xl p-4 mb-8 flex items-center justify-between">
+        <span class="text-gray-500 font-medium">Học phí / tháng</span>
+        <span class="text-bambi-orange text-2xl font-black">{{ formatPrice(course()!.price) }}</span>
+      </div>
+
+      <a [routerLink]="['/dang-ky', course()!._id]"
+         class="block w-full text-center bg-bambi-orange text-white font-bold py-4 rounded-xl text-lg hover:bg-orange-600 transition-colors shadow-md">
+        🎉 Đăng ký ngay
+      </a>
+    </div>
+  </div>
+</div>
