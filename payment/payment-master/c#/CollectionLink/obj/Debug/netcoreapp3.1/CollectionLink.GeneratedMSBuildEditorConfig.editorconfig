@@ -1,6 +1,6 @@
 is_global = true
 build_property.RootNamespace = CollectionLink
-build_property.ProjectDir = E:\Personal Projects\BambiEnglish\payment\payment-master\c#\CollectionLink\
+build_property.ProjectDir = D:\BambiEnglish\payment\payment-master\c#\CollectionLink\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.CsWinRTUseWindowsUIXamlProjections = false
