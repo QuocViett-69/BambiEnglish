@@ -27,6 +27,9 @@ let RegistrationsController = class RegistrationsController {
     handleMomoIpn(body) {
         return this.registrationsService.handleMomoIpn(body);
     }
+    mockPayment(body) {
+        return this.registrationsService.mockPaymentSuccess(body.orderId);
+    }
     getPaymentStatus(orderId) {
         return this.registrationsService.getPaymentStatus(orderId);
     }
@@ -46,6 +49,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], RegistrationsController.prototype, "handleMomoIpn", null);
+__decorate([
+    (0, common_1.Post)('mock-payment'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RegistrationsController.prototype, "mockPayment", null);
 __decorate([
     (0, common_1.Get)('payment/status/:orderId'),
     __param(0, (0, common_1.Param)('orderId')),

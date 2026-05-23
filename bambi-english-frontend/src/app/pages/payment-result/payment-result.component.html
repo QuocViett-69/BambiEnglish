@@ -23,10 +23,16 @@
       Mã giao dịch MoMo: <span class="font-mono font-bold text-[#ae2070]">{{ statusData()?.momoTransId }}</span>
     </p>
     <p class="text-gray-500 text-sm mb-6">Chúng tôi sẽ liên hệ xác nhận lịch học sớm nhất!</p>
-    <a routerLink="/"
-       class="inline-block bg-bambi-orange text-white font-bold px-6 py-3 rounded-full hover:bg-orange-600 transition-colors">
-      Về trang chủ
-    </a>
+    <div class="flex flex-col gap-3">
+      <a routerLink="/lich-hoc"
+         class="inline-block bg-bambi-orange text-white font-bold px-6 py-3 rounded-full hover:bg-orange-600 transition-colors w-full text-center">
+        Xem lịch học
+      </a>
+      <a routerLink="/"
+         class="inline-block bg-gray-100 text-gray-600 font-bold px-6 py-3 rounded-full hover:bg-gray-200 transition-colors w-full text-center">
+        Về trang chủ
+      </a>
+    </div>
   </div>
 
   <!-- Thất bại -->

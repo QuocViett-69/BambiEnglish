@@ -6,6 +6,8 @@ import { FacilitiesComponent }    from './pages/facilities/facilities.component'
 import { CourseDetailComponent }  from './pages/course-detail/course-detail.component';
 import { CheckoutComponent }      from './pages/checkout/checkout.component';
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
+import { MockMomoComponent }      from './pages/mock-momo/mock-momo.component';
+import { ScheduleComponent }      from './pages/schedule/schedule.component';
 
 export const routes: Routes = [
   { path: '',               component: HomeComponent,          title: 'Bambi English – Trang chủ' },
@@ -14,8 +16,9 @@ export const routes: Routes = [
   { path: 'co-so-vat-chat', component: FacilitiesComponent,    title: 'CSVC – Bambi English' },
   { path: 'khoa-hoc/:id',   component: CourseDetailComponent,  title: 'Chi tiết khóa học' },
   { path: 'dang-ky/:id',    component: CheckoutComponent,      title: 'Đăng ký khóa học' },
-  // MoMo redirect về URL này với query params: ?orderId=...&resultCode=0&transId=...
   { path: 'payment-result', component: PaymentResultComponent, title: 'Kết quả thanh toán' },
+  { path: 'mock-momo',      component: MockMomoComponent,      title: 'Cổng thanh toán MoMo' },
+  { path: 'lich-hoc',       component: ScheduleComponent,      title: 'Lịch học' },
   { path: '**',             redirectTo: '' },
 ];
 

@@ -1,0 +1,68 @@
+<div class="min-h-screen bg-[#f5f5f5] flex items-center justify-center p-4">
+  <div class="bg-white max-w-md w-full rounded-2xl shadow-xl overflow-hidden">
+    <!-- Header MoMo -->
+    <div class="bg-[#ae2070] p-4 text-center text-white flex items-center justify-center gap-2">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="white"/>
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="9" font-weight="bold" fill="#ae2070">MoMo</text>
+      </svg>
+      <h2 class="font-bold text-lg">Cổng thanh toán MoMo (Môi trường Test)</h2>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <div class="bg-gray-50 rounded-xl p-4 mb-6">
+        <p class="text-sm text-gray-500 mb-1">Mã đơn hàng: <span class="font-mono text-gray-800">{{orderId}}</span></p>
+        <p class="text-sm text-gray-500 mb-1">Dịch vụ: <span class="text-gray-800">{{courseTitle}}</span></p>
+        <p class="text-sm text-gray-500">Số tiền: <span class="font-bold text-[#ae2070] text-lg">{{formatPrice(amount)}}</span></p>
+      </div>
+
+      <!-- Step 1: Nhập thẻ -->
+      <div *ngIf="step() === 1">
+        <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">ATM</span>
+          Nhập thông tin thẻ để thanh toán
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Số thẻ</label>
+            <input type="text" value="9704 0000 0000 0018" readonly class="w-full border rounded-lg px-4 py-2 bg-gray-50 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Tên chủ thẻ</label>
+            <input type="text" value="NGUYEN VAN A" readonly class="w-full border rounded-lg px-4 py-2 bg-gray-50 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Ngày phát hành</label>
+            <input type="text" value="03/07" readonly class="w-full border rounded-lg px-4 py-2 bg-gray-50 focus:outline-none" />
+          </div>
+          
+          <button (click)="nextStep()" [disabled]="loading()" class="w-full bg-[#ae2070] text-white font-bold py-3 rounded-xl mt-6 hover:bg-[#8f1a5c] flex justify-center items-center gap-2 disabled:opacity-70 transition-colors">
+             <span *ngIf="loading()">Đang xử lý...</span>
+             <span *ngIf="!loading()">Thanh toán</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Nhập OTP -->
+      <div *ngIf="step() === 2" class="text-center animate-fade-in">
+        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <h3 class="font-bold text-gray-800 mb-2">Xác thực OTP</h3>
+        <p class="text-sm text-gray-500 mb-6">Mã OTP đã được gửi đến số điện thoại của bạn. Vui lòng nhập để hoàn tất thanh toán.</p>
+        
+        <input type="text" placeholder="Nhập OTP (vd: 123456)" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] focus:outline-none focus:border-[#ae2070] focus:ring-1 focus:ring-[#ae2070] mb-6 font-mono" />
+        
+        <button (click)="submitOTP()" [disabled]="loading()" class="w-full bg-[#ae2070] text-white font-bold py-3 rounded-xl hover:bg-[#8f1a5c] flex justify-center items-center gap-2 disabled:opacity-70 transition-colors">
+           <span *ngIf="loading()">
+             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+             Đang xác thực...
+           </span>
+           <span *ngIf="!loading()">Xác nhận thanh toán</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

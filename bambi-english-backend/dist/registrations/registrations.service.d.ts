@@ -14,6 +14,9 @@ export declare class RegistrationsService {
         orderId: string;
         paymentUrl: string;
     }>;
+    mockPaymentSuccess(orderId: string): Promise<{
+        success: boolean;
+    }>;
     handleMomoIpn(body: any): Promise<{
         resultCode: number;
         message: string;

@@ -19,6 +19,13 @@ export class RegistrationsController {
     return this.registrationsService.handleMomoIpn(body);
   }
 
+  // POST /api/registrations/mock-payment
+  // Giả lập giao dịch thanh toán MoMo thành công
+  @Post('mock-payment')
+  mockPayment(@Body() body: { orderId: string }) {
+    return this.registrationsService.mockPaymentSuccess(body.orderId);
+  }
+
   // GET /api/registrations/payment/status/:orderId
   // Frontend gọi sau khi MoMo redirect về redirectUrl để lấy kết quả
   @Get('payment/status/:orderId')

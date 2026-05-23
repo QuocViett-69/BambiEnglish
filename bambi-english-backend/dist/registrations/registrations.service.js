@@ -145,6 +145,16 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
             paymentUrl: payUrl,
         };
     }
+    async mockPaymentSuccess(orderId) {
+        const registration = await this.registrationModel.findOne({ orderId });
+        if (!registration) {
+            throw new common_1.NotFoundException(`Không tìm thấy đơn đăng ký: ${orderId}`);
+        }
+        registration.paymentStatus = registration_schema_1.PaymentStatus.SUCCESS;
+        registration.momoTransId = `MOCK-${Date.now()}`;
+        await registration.save();
+        return { success: true };
+    }
     async handleMomoIpn(body) {
         this.logger.log(`[MoMo IPN] Nhận callback: ${JSON.stringify(body)}`);
         const { orderId, resultCode, transId, amount, message, signature: receivedSignature, } = body;

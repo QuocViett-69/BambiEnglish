@@ -12,6 +12,11 @@ export declare class RegistrationsController {
         resultCode: number;
         message: string;
     }>;
+    mockPayment(body: {
+        orderId: string;
+    }): Promise<{
+        success: boolean;
+    }>;
     getPaymentStatus(orderId: string): Promise<{
         orderId: string;
         paymentStatus: import("./registration.schema").PaymentStatus;

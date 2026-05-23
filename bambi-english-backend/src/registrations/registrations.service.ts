@@ -133,6 +133,20 @@ export class RegistrationsService {
     };
   }
 
+  // ─── MOCK PAYMENT SUCCESS ───────────────────────────────────────────────────
+  async mockPaymentSuccess(orderId: string) {
+    const registration = await this.registrationModel.findOne({ orderId });
+    if (!registration) {
+      throw new NotFoundException(`Không tìm thấy đơn đăng ký: ${orderId}`);
+    }
+    
+    registration.paymentStatus = PaymentStatus.SUCCESS;
+    registration.momoTransId   = `MOCK-${Date.now()}`;
+    await registration.save();
+    
+    return { success: true };
+  }
+
   // ─── POST /api/registrations/payment/ipn ────────────────────────────────────
   async handleMomoIpn(body: any) {
     this.logger.log(`[MoMo IPN] Nhận callback: ${JSON.stringify(body)}`);
