@@ -9,6 +9,11 @@ export enum PaymentStatus {
   FAILED  = 'FAILED',
 }
 
+export enum PaymentMethod {
+  MOMO  = 'momo',
+  VNPAY = 'vnpay',
+}
+
 @Schema({ timestamps: true })
 export class Registration {
   @Prop({ required: true })
@@ -23,13 +28,21 @@ export class Registration {
   @Prop({ enum: PaymentStatus, default: PaymentStatus.PENDING })
   paymentStatus: PaymentStatus;
 
-  // orderId dùng làm mã giao dịch gửi lên MoMo (VD: BAMBI-A1B2C3D4)
+  // Phương thức thanh toán: 'momo' | 'vnpay'
+  @Prop({ enum: PaymentMethod, default: PaymentMethod.MOMO })
+  paymentMethod: PaymentMethod;
+
+  // orderId dùng làm mã giao dịch gửi lên cổng thanh toán (VD: BAMBI-A1B2C3D4)
   @Prop()
   orderId: string;
 
   // momoTransId là mã giao dịch do MoMo trả về sau khi thanh toán thành công
   @Prop()
   momoTransId: string;
+
+  // vnpayTransId là mã giao dịch do VNPay trả về sau khi thanh toán thành công
+  @Prop()
+  vnpayTransId: string;
 }
 
 export const RegistrationSchema = SchemaFactory.createForClass(Registration);

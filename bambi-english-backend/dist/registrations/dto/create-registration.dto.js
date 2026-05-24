@@ -5,6 +5,7 @@ class CreateRegistrationDto {
     studentName;
     parentPhone;
     courseId;
+    paymentMethod;
 }
 exports.CreateRegistrationDto = CreateRegistrationDto;
 //# sourceMappingURL=create-registration.dto.js.map

@@ -2,55 +2,94 @@
 
   <!-- Loading -->
   <div *ngIf="loading()" class="text-center">
-    <div class="w-16 h-16 border-4 border-[#ae2070] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-    <p class="text-gray-500">Đang xác nhận kết quả thanh toán...</p>
+    <div class="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+         [style.border-color]="'#005BAA'"
+         style="border-top-color: transparent;">
+    </div>
+    <p class="text-gray-500 font-medium">Đang xác nhận kết quả thanh toán...</p>
+    <p class="text-gray-400 text-sm mt-1">Vui lòng chờ trong giây lát</p>
   </div>
 
-  <!-- Thành công -->
+  <!-- ✅ Thành công -->
   <div *ngIf="!loading() && isSuccess()"
        class="bg-white rounded-2xl shadow-xl p-10 text-center max-w-sm w-full">
+
     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
       <span class="text-4xl">🎉</span>
     </div>
-    <h1 class="text-2xl font-black font-display text-bambi-green mb-2">
+
+    <h1 class="text-2xl font-black font-display text-green-600 mb-2">
       Thanh toán thành công!
     </h1>
-    <p class="text-gray-500 mb-2">
+
+    <p class="text-gray-500 mb-3">
       Chúc mừng <strong>{{ statusData()?.studentName }}</strong> đã đăng ký khóa học tại Bambi English.
     </p>
-    <p class="text-gray-400 text-sm mb-1">Mã đơn: <span class="font-mono font-bold text-gray-600">{{ orderId }}</span></p>
-    <p *ngIf="statusData()?.momoTransId" class="text-gray-400 text-sm mb-6">
-      Mã giao dịch MoMo: <span class="font-mono font-bold text-[#ae2070]">{{ statusData()?.momoTransId }}</span>
-    </p>
+
+    <!-- Provider Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold text-white mb-4"
+         [style.background-color]="providerColor">
+      <ng-container *ngIf="providerLabel === 'VNPay'">
+        <svg width="40" height="14" viewBox="0 0 70 14">
+          <text x="0" y="12" font-size="12" font-weight="bold" fill="white">VNPAY</text>
+        </svg>
+      </ng-container>
+      <ng-container *ngIf="providerLabel === 'MoMo'">
+        <span>MoMo</span>
+      </ng-container>
+      · Sandbox
+    </div>
+
+    <div class="bg-gray-50 rounded-xl p-3 text-left mb-6 space-y-1">
+      <p class="text-gray-400 text-sm">
+        Mã đơn: <span class="font-mono font-bold text-gray-700">{{ orderId }}</span>
+      </p>
+      <p *ngIf="transactionId" class="text-gray-400 text-sm">
+        Mã giao dịch {{ providerLabel }}:
+        <span class="font-mono font-bold" [style.color]="providerColor">{{ transactionId }}</span>
+      </p>
+    </div>
+
     <p class="text-gray-500 text-sm mb-6">Chúng tôi sẽ liên hệ xác nhận lịch học sớm nhất!</p>
+
     <div class="flex flex-col gap-3">
       <a routerLink="/lich-hoc"
-         class="inline-block bg-bambi-orange text-white font-bold px-6 py-3 rounded-full hover:bg-orange-600 transition-colors w-full text-center">
-        Xem lịch học
+         class="inline-block bg-bambi-orange text-white font-bold px-6 py-3 rounded-full
+                hover:bg-orange-600 transition-colors w-full text-center">
+        📅 Xem lịch học
       </a>
       <a routerLink="/"
-         class="inline-block bg-gray-100 text-gray-600 font-bold px-6 py-3 rounded-full hover:bg-gray-200 transition-colors w-full text-center">
-        Về trang chủ
+         class="inline-block bg-gray-100 text-gray-600 font-bold px-6 py-3 rounded-full
+                hover:bg-gray-200 transition-colors w-full text-center">
+        🏠 Về trang chủ
       </a>
     </div>
   </div>
 
-  <!-- Thất bại -->
+  <!-- ❌ Thất bại -->
   <div *ngIf="!loading() && isFailed()"
        class="bg-white rounded-2xl shadow-xl p-10 text-center max-w-sm w-full">
+
     <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
       <span class="text-4xl">❌</span>
     </div>
+
     <h1 class="text-2xl font-black font-display text-red-500 mb-2">
       Thanh toán thất bại
     </h1>
-    <p class="text-gray-500 mb-2">{{ message || 'Giao dịch không thành công hoặc đã bị hủy.' }}</p>
-    <p *ngIf="orderId" class="text-gray-400 text-sm mb-6">
-      Mã đơn: <span class="font-mono">{{ orderId }}</span>
+
+    <p class="text-gray-500 mb-2">
+      {{ message || 'Giao dịch không thành công hoặc đã bị hủy.' }}
     </p>
+
+    <p *ngIf="orderId" class="text-gray-400 text-sm mb-6">
+      Mã đơn: <span class="font-mono font-semibold">{{ orderId }}</span>
+    </p>
+
     <div class="flex flex-col gap-3">
       <a routerLink="/"
-         class="inline-block bg-[#ae2070] text-white font-bold px-6 py-3 rounded-full hover:bg-[#8f1a5c] transition-colors">
+         class="inline-block bg-[#ae2070] text-white font-bold px-6 py-3 rounded-full
+                hover:bg-[#8f1a5c] transition-colors">
         Chọn khóa học khác
       </a>
       <a routerLink="/"

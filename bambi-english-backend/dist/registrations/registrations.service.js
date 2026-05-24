@@ -54,6 +54,7 @@ const axios_1 = require("@nestjs/axios");
 const rxjs_1 = require("rxjs");
 const crypto = __importStar(require("crypto"));
 const uuid_1 = require("uuid");
+const vnpay_1 = require("vnpay");
 const registration_schema_1 = require("./registration.schema");
 const courses_service_1 = require("../courses/courses.service");
 const MOMO_PARTNER_CODE = 'MOMO';
@@ -63,6 +64,17 @@ const MOMO_ENDPOINT = 'https://test-payment.momo.vn/v2/gateway/api/create';
 const MOMO_REDIRECT_URL = 'http://localhost:4200/payment-result';
 const MOMO_IPN_URL = 'http://localhost:3000/api/registrations/payment/ipn';
 const MOMO_REQUEST_TYPE = 'payWithMethod';
+const VNPAY_TMN_CODE = 'B7MZSRZN';
+const VNPAY_HASH_SECRET = 'N6EHMKL4RN3B3JAB7DG75R0U7VMVLKEH';
+const VNPAY_RETURN_URL = 'https://lowell-intercerebral-monopodially.ngrok-free.dev/payment-result';
+const vnpay = new vnpay_1.VNPay({
+    tmnCode: VNPAY_TMN_CODE,
+    secureSecret: VNPAY_HASH_SECRET,
+    vnpayHost: 'https://sandbox.vnpayment.vn',
+    testMode: true,
+    hashAlgorithm: vnpay_1.HashAlgorithm.SHA512,
+    enableLog: false,
+});
 let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
     registrationModel;
     httpService;
@@ -78,6 +90,13 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
         if (!course) {
             throw new common_1.NotFoundException(`Không tìm thấy khóa học với ID: ${dto.courseId}`);
         }
+        const method = dto.paymentMethod ?? 'momo';
+        if (method === 'vnpay') {
+            return this._createVnpayPayment(dto, course);
+        }
+        return this._createMomoPayment(dto, course);
+    }
+    async _createMomoPayment(dto, course) {
         const amount = course.price;
         const orderId = `BAMBI-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`;
         const requestId = (0, uuid_1.v4)();
@@ -136,6 +155,7 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
             parentPhone: dto.parentPhone,
             courseId: dto.courseId,
             paymentStatus: registration_schema_1.PaymentStatus.PENDING,
+            paymentMethod: registration_schema_1.PaymentMethod.MOMO,
             orderId,
         });
         await registration.save();
@@ -143,6 +163,38 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
             message: 'Đăng ký thành công! Đang chuyển tới cổng thanh toán MoMo...',
             orderId,
             paymentUrl: payUrl,
+            paymentMethod: 'momo',
+        };
+    }
+    async _createVnpayPayment(dto, course) {
+        const amount = course.price;
+        const orderId = `BAMBI-${(0, uuid_1.v4)().slice(0, 8).toUpperCase()}`;
+        const ipAddr = '127.0.0.1';
+        const paymentUrl = vnpay.buildPaymentUrl({
+            vnp_Amount: amount,
+            vnp_IpAddr: ipAddr,
+            vnp_TxnRef: orderId,
+            vnp_OrderInfo: `Dang ky khoa hoc ${course.title}`,
+            vnp_OrderType: vnpay_1.ProductCode.Other,
+            vnp_ReturnUrl: VNPAY_RETURN_URL,
+        });
+        this.logger.log(`[VNPay] Payment URL created for order: ${orderId}`);
+        const registration = new this.registrationModel({
+            studentName: dto.studentName,
+            parentPhone: dto.parentPhone,
+            courseId: dto.courseId,
+            paymentStatus: registration_schema_1.PaymentStatus.PENDING,
+            paymentMethod: registration_schema_1.PaymentMethod.VNPAY,
+            orderId,
+        });
+        await registration.save();
+        return {
+            message: 'Đăng ký thành công! Đang chuyển tới cổng thanh toán VNPay...',
+            orderId,
+            paymentUrl,
+            paymentMethod: 'vnpay',
+            amount,
+            courseTitle: course.title,
         };
     }
     async mockPaymentSuccess(orderId) {
@@ -151,7 +203,17 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
             throw new common_1.NotFoundException(`Không tìm thấy đơn đăng ký: ${orderId}`);
         }
         registration.paymentStatus = registration_schema_1.PaymentStatus.SUCCESS;
-        registration.momoTransId = `MOCK-${Date.now()}`;
+        registration.momoTransId = `MOCK-MOMO-${Date.now()}`;
+        await registration.save();
+        return { success: true };
+    }
+    async mockVnpaySuccess(orderId) {
+        const registration = await this.registrationModel.findOne({ orderId });
+        if (!registration) {
+            throw new common_1.NotFoundException(`Không tìm thấy đơn đăng ký: ${orderId}`);
+        }
+        registration.paymentStatus = registration_schema_1.PaymentStatus.SUCCESS;
+        registration.vnpayTransId = `MOCK-VNPAY-${Date.now()}`;
         await registration.save();
         return { success: true };
     }
@@ -196,6 +258,35 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
         await registration.save();
         return { resultCode: 0, message: 'Received' };
     }
+    async handleVnpayReturn(query) {
+        this.logger.log(`[VNPay Return] Query: ${JSON.stringify(query)}`);
+        try {
+            const verify = vnpay.verifyReturnUrl(query);
+            const orderId = query['vnp_TxnRef'];
+            const vnp_ResponseCode = query['vnp_ResponseCode'];
+            const registration = await this.registrationModel.findOne({ orderId });
+            if (registration) {
+                if (verify.isVerified && verify.isSuccess && vnp_ResponseCode === '00') {
+                    registration.paymentStatus = registration_schema_1.PaymentStatus.SUCCESS;
+                    registration.vnpayTransId = query['vnp_TransactionNo'] ?? `VNPAY-${Date.now()}`;
+                }
+                else {
+                    registration.paymentStatus = registration_schema_1.PaymentStatus.FAILED;
+                }
+                await registration.save();
+            }
+            return {
+                isVerified: verify.isVerified,
+                isSuccess: verify.isSuccess && vnp_ResponseCode === '00',
+                orderId,
+                message: verify.message,
+            };
+        }
+        catch (error) {
+            this.logger.error('[VNPay Return] Lỗi xác thực', error?.message);
+            return { isVerified: false, isSuccess: false, message: 'Verify error' };
+        }
+    }
     async getPaymentStatus(orderId) {
         const registration = await this.registrationModel
             .findOne({ orderId })
@@ -206,7 +297,9 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
         return {
             orderId,
             paymentStatus: registration.paymentStatus,
+            paymentMethod: registration.paymentMethod,
             momoTransId: registration.momoTransId ?? null,
+            vnpayTransId: registration.vnpayTransId ?? null,
             studentName: registration.studentName,
         };
     }

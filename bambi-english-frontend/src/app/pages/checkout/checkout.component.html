@@ -44,34 +44,94 @@
         </p>
       </div>
 
+      <!-- Payment Method Selection -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Chọn phương thức thanh toán</label>
+        <div class="grid grid-cols-2 gap-3">
+
+          <!-- MoMo Option -->
+          <button
+            type="button"
+            id="select-momo"
+            (click)="selectMethod('momo')"
+            [class.ring-2]="selectedMethod() === 'momo'"
+            [class.ring-[#ae2070]]="selectedMethod() === 'momo'"
+            [class.border-[#ae2070]]="selectedMethod() === 'momo'"
+            class="flex flex-col items-center justify-center gap-2 border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md"
+          >
+            <div class="w-12 h-12 rounded-full bg-[#ae2070] flex items-center justify-center shadow-md">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="12" fill="white"/>
+                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                      font-size="7" font-weight="bold" fill="#ae2070">MoMo</text>
+              </svg>
+            </div>
+            <span class="text-sm font-bold text-gray-700">MoMo</span>
+            <span *ngIf="selectedMethod() === 'momo'" class="text-xs text-[#ae2070] font-semibold">✓ Đã chọn</span>
+          </button>
+
+          <!-- VNPay Option -->
+          <button
+            type="button"
+            id="select-vnpay"
+            (click)="selectMethod('vnpay')"
+            [class.ring-2]="selectedMethod() === 'vnpay'"
+            [class.ring-[#005BAA]]="selectedMethod() === 'vnpay'"
+            [class.border-[#005BAA]]="selectedMethod() === 'vnpay'"
+            class="flex flex-col items-center justify-center gap-2 border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md"
+          >
+            <div class="w-12 h-12 rounded-full bg-[#005BAA] flex items-center justify-center shadow-md">
+              <svg width="28" height="20" viewBox="0 0 60 20" fill="none">
+                <text x="2" y="15" font-size="13" font-weight="bold" fill="white">VNPAY</text>
+              </svg>
+            </div>
+            <span class="text-sm font-bold text-gray-700">VNPay</span>
+            <span *ngIf="selectedMethod() === 'vnpay'" class="text-xs text-[#005BAA] font-semibold">✓ Đã chọn</span>
+          </button>
+
+        </div>
+      </div>
+
       <!-- Submit Button -->
       <button
         type="submit"
+        id="checkout-submit"
         [disabled]="form.invalid || loading()"
-        class="w-full bg-[#ae2070] text-white font-bold py-4 rounded-xl text-lg
-               hover:bg-[#8f1a5c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+        [class.bg-[#ae2070]]="selectedMethod() === 'momo'"
+        [class.hover:bg-[#8f1a5c]]="selectedMethod() === 'momo'"
+        [class.bg-[#005BAA]]="selectedMethod() === 'vnpay'"
+        [class.hover:bg-[#004a8c]]="selectedMethod() === 'vnpay'"
+        class="w-full text-white font-bold py-4 rounded-xl text-lg
+               transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                flex items-center justify-center gap-2"
       >
         <span *ngIf="!loading()" class="flex items-center gap-2">
-          <!-- MoMo logo SVG mini -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="12" fill="white"/>
-            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
-                  font-size="9" font-weight="bold" fill="#ae2070">MoMo</text>
-          </svg>
-          Thanh toán qua MoMo
+          <ng-container *ngIf="selectedMethod() === 'momo'">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="12" fill="white"/>
+              <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                    font-size="7" font-weight="bold" fill="#ae2070">MoMo</text>
+            </svg>
+            Thanh toán qua MoMo
+          </ng-container>
+          <ng-container *ngIf="selectedMethod() === 'vnpay'">
+            <svg width="36" height="20" viewBox="0 0 60 20" fill="none">
+              <text x="0" y="15" font-size="13" font-weight="bold" fill="white">VNPAY</text>
+            </svg>
+            Thanh toán qua VNPay
+          </ng-container>
         </span>
         <span *ngIf="loading()" class="flex items-center gap-2">
           <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
           </svg>
-          Đang kết nối MoMo...
+          Đang kết nối...
         </span>
       </button>
 
       <p class="text-center text-xs text-gray-400 mt-2">
-        🔒 Thanh toán an toàn qua cổng MoMo Sandbox (môi trường test)
+        🔒 Thanh toán an toàn – Môi trường Test (Sandbox)
       </p>
     </form>
   </div>

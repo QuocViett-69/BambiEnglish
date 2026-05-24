@@ -1,1 +1,1 @@
-{"version":3,"file":"create-registration.dto.js","sourceRoot":"","sources":["../../../src/registrations/dto/create-registration.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,qBAAqB;IAChC,WAAW,CAAS;IACpB,WAAW,CAAS;IACpB,QAAQ,CAAS;CAClB;AAJD,sDAIC"}
+{"version":3,"file":"create-registration.dto.js","sourceRoot":"","sources":["../../../src/registrations/dto/create-registration.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,qBAAqB;IAChC,WAAW,CAAS;IACpB,WAAW,CAAS;IACpB,QAAQ,CAAS;IACjB,aAAa,CAAmB;CACjC;AALD,sDAKC"}

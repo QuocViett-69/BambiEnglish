@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query } from '@nestjs/common';
 import { RegistrationsService } from './registrations.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 
@@ -26,8 +26,22 @@ export class RegistrationsController {
     return this.registrationsService.mockPaymentSuccess(body.orderId);
   }
 
+  // POST /api/registrations/mock-vnpay-payment
+  // Giả lập giao dịch thanh toán VNPay thành công
+  @Post('mock-vnpay-payment')
+  mockVnpayPayment(@Body() body: { orderId: string }) {
+    return this.registrationsService.mockVnpaySuccess(body.orderId);
+  }
+
+  // GET /api/registrations/vnpay-return
+  // VNPay redirect về URL này sau khi thanh toán (hoặc backend xử lý verify)
+  @Get('vnpay-return')
+  handleVnpayReturn(@Query() query: Record<string, string>) {
+    return this.registrationsService.handleVnpayReturn(query);
+  }
+
   // GET /api/registrations/payment/status/:orderId
-  // Frontend gọi sau khi MoMo redirect về redirectUrl để lấy kết quả
+  // Frontend gọi sau khi redirect về để lấy kết quả chính xác từ DB
   @Get('payment/status/:orderId')
   getPaymentStatus(@Param('orderId') orderId: string) {
     return this.registrationsService.getPaymentStatus(orderId);

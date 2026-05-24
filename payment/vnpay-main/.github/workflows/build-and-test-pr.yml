@@ -1,0 +1,14 @@
+name: Build and test on pull request
+
+on:
+    pull_request:
+        branches: ['*']
+
+permissions:
+    contents: read
+
+jobs:
+    automation-tests:
+        uses: ./.github/workflows/test-coverage.yml
+        secrets:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

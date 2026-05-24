@@ -30,6 +30,12 @@ let RegistrationsController = class RegistrationsController {
     mockPayment(body) {
         return this.registrationsService.mockPaymentSuccess(body.orderId);
     }
+    mockVnpayPayment(body) {
+        return this.registrationsService.mockVnpaySuccess(body.orderId);
+    }
+    handleVnpayReturn(query) {
+        return this.registrationsService.handleVnpayReturn(query);
+    }
     getPaymentStatus(orderId) {
         return this.registrationsService.getPaymentStatus(orderId);
     }
@@ -56,6 +62,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], RegistrationsController.prototype, "mockPayment", null);
+__decorate([
+    (0, common_1.Post)('mock-vnpay-payment'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RegistrationsController.prototype, "mockVnpayPayment", null);
+__decorate([
+    (0, common_1.Get)('vnpay-return'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RegistrationsController.prototype, "handleVnpayReturn", null);
 __decorate([
     (0, common_1.Get)('payment/status/:orderId'),
     __param(0, (0, common_1.Param)('orderId')),

@@ -10,10 +10,12 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import * as crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
+import { VNPay, ProductCode, HashAlgorithm } from 'vnpay';
 import {
   Registration,
   RegistrationDocument,
   PaymentStatus,
+  PaymentMethod,
 } from './registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { CoursesService } from '../courses/courses.service';
@@ -27,6 +29,23 @@ const MOMO_REDIRECT_URL  = 'http://localhost:4200/payment-result';
 const MOMO_IPN_URL       = 'http://localhost:3000/api/registrations/payment/ipn';
 const MOMO_REQUEST_TYPE  = 'payWithMethod';
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─── VNPay Sandbox Credentials ───────────────────────────────────────────────
+const VNPAY_TMN_CODE    = 'B7MZSRZN';
+const VNPAY_HASH_SECRET = 'N6EHMKL4RN3B3JAB7DG75R0U7VMVLKEH';
+// Dùng ngrok URL để VNPay sandbox redirect được (không chấp nhận localhost)
+const VNPAY_RETURN_URL  = 'https://lowell-intercerebral-monopodially.ngrok-free.dev/payment-result';
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Khởi tạo VNPay client một lần duy nhất
+const vnpay = new VNPay({
+  tmnCode: VNPAY_TMN_CODE,
+  secureSecret: VNPAY_HASH_SECRET,
+  vnpayHost: 'https://sandbox.vnpayment.vn',
+  testMode: true,
+  hashAlgorithm: HashAlgorithm.SHA512,
+  enableLog: false,
+});
 
 @Injectable()
 export class RegistrationsService {
@@ -46,15 +65,22 @@ export class RegistrationsService {
     if (!course) {
       throw new NotFoundException(`Không tìm thấy khóa học với ID: ${dto.courseId}`);
     }
-    const amount = course.price;
 
-    // 2. Tạo orderId duy nhất
+    const method = dto.paymentMethod ?? 'momo';
+    if (method === 'vnpay') {
+      return this._createVnpayPayment(dto, course);
+    }
+    return this._createMomoPayment(dto, course);
+  }
+
+  // ─── PRIVATE: Tạo thanh toán MoMo ──────────────────────────────────────────
+  private async _createMomoPayment(dto: CreateRegistrationDto, course: any) {
+    const amount    = course.price;
     const orderId   = `BAMBI-${uuidv4().slice(0, 8).toUpperCase()}`;
     const requestId = uuidv4();
     const orderInfo = `Dang ky khoa hoc ${course.title}`;
     const extraData = '';
 
-    // 3. Tạo chữ ký HMAC SHA256
     const rawSignature =
       `accessKey=${MOMO_ACCESS_KEY}` +
       `&amount=${amount}` +
@@ -75,7 +101,6 @@ export class RegistrationsService {
     this.logger.debug(`[MoMo] rawSignature: ${rawSignature}`);
     this.logger.debug(`[MoMo] signature: ${signature}`);
 
-    // 4. Gọi MoMo API
     const requestBody = {
       partnerCode:  MOMO_PARTNER_CODE,
       partnerName:  'Bambi English',
@@ -116,24 +141,67 @@ export class RegistrationsService {
       throw new InternalServerErrorException('Không thể kết nối cổng thanh toán MoMo');
     }
 
-    // 5. Lưu đăng ký vào DB
+    // Lưu đăng ký vào DB
     const registration = new this.registrationModel({
       studentName:   dto.studentName,
       parentPhone:   dto.parentPhone,
       courseId:      dto.courseId,
       paymentStatus: PaymentStatus.PENDING,
+      paymentMethod: PaymentMethod.MOMO,
       orderId,
     });
     await registration.save();
 
     return {
-      message:   'Đăng ký thành công! Đang chuyển tới cổng thanh toán MoMo...',
+      message:      'Đăng ký thành công! Đang chuyển tới cổng thanh toán MoMo...',
       orderId,
-      paymentUrl: payUrl,
+      paymentUrl:   payUrl,
+      paymentMethod: 'momo',
     };
   }
 
-  // ─── MOCK PAYMENT SUCCESS ───────────────────────────────────────────────────
+  // ─── PRIVATE: Tạo thanh toán VNPay ─────────────────────────────────────────
+  private async _createVnpayPayment(dto: CreateRegistrationDto, course: any) {
+    const amount  = course.price;
+    const orderId = `BAMBI-${uuidv4().slice(0, 8).toUpperCase()}`;
+
+    // Lấy IP (sandbox cho phép dùng IP cứng)
+    const ipAddr = '127.0.0.1';
+
+    const paymentUrl = vnpay.buildPaymentUrl({
+      vnp_Amount:    amount,
+      vnp_IpAddr:    ipAddr,
+      vnp_TxnRef:    orderId,
+      vnp_OrderInfo: `Dang ky khoa hoc ${course.title}`,
+      vnp_OrderType: ProductCode.Other,
+      vnp_ReturnUrl: VNPAY_RETURN_URL,
+    });
+
+    this.logger.log(`[VNPay] Payment URL created for order: ${orderId}`);
+
+    // Lưu đăng ký vào DB
+    const registration = new this.registrationModel({
+      studentName:   dto.studentName,
+      parentPhone:   dto.parentPhone,
+      courseId:      dto.courseId,
+      paymentStatus: PaymentStatus.PENDING,
+      paymentMethod: PaymentMethod.VNPAY,
+      orderId,
+    });
+    await registration.save();
+
+    return {
+      message:      'Đăng ký thành công! Đang chuyển tới cổng thanh toán VNPay...',
+      orderId,
+      paymentUrl,
+      paymentMethod: 'vnpay',
+      // Trả thêm để mock page có thể dùng
+      amount,
+      courseTitle: course.title,
+    };
+  }
+
+  // ─── MOCK MOMO PAYMENT SUCCESS ──────────────────────────────────────────────
   async mockPaymentSuccess(orderId: string) {
     const registration = await this.registrationModel.findOne({ orderId });
     if (!registration) {
@@ -141,13 +209,27 @@ export class RegistrationsService {
     }
     
     registration.paymentStatus = PaymentStatus.SUCCESS;
-    registration.momoTransId   = `MOCK-${Date.now()}`;
+    registration.momoTransId   = `MOCK-MOMO-${Date.now()}`;
     await registration.save();
     
     return { success: true };
   }
 
-  // ─── POST /api/registrations/payment/ipn ────────────────────────────────────
+  // ─── MOCK VNPAY PAYMENT SUCCESS ─────────────────────────────────────────────
+  async mockVnpaySuccess(orderId: string) {
+    const registration = await this.registrationModel.findOne({ orderId });
+    if (!registration) {
+      throw new NotFoundException(`Không tìm thấy đơn đăng ký: ${orderId}`);
+    }
+    
+    registration.paymentStatus = PaymentStatus.SUCCESS;
+    registration.vnpayTransId  = `MOCK-VNPAY-${Date.now()}`;
+    await registration.save();
+    
+    return { success: true };
+  }
+
+  // ─── POST /api/registrations/payment/ipn (MoMo) ─────────────────────────────
   async handleMomoIpn(body: any) {
     this.logger.log(`[MoMo IPN] Nhận callback: ${JSON.stringify(body)}`);
 
@@ -208,6 +290,38 @@ export class RegistrationsService {
     return { resultCode: 0, message: 'Received' };
   }
 
+  // ─── GET /api/registrations/vnpay-return ────────────────────────────────────
+  async handleVnpayReturn(query: Record<string, string>) {
+    this.logger.log(`[VNPay Return] Query: ${JSON.stringify(query)}`);
+
+    try {
+      const verify = vnpay.verifyReturnUrl(query as any);
+      const orderId = query['vnp_TxnRef'];
+      const vnp_ResponseCode = query['vnp_ResponseCode'];
+
+      const registration = await this.registrationModel.findOne({ orderId });
+      if (registration) {
+        if (verify.isVerified && verify.isSuccess && vnp_ResponseCode === '00') {
+          registration.paymentStatus = PaymentStatus.SUCCESS;
+          registration.vnpayTransId  = query['vnp_TransactionNo'] ?? `VNPAY-${Date.now()}`;
+        } else {
+          registration.paymentStatus = PaymentStatus.FAILED;
+        }
+        await registration.save();
+      }
+
+      return {
+        isVerified: verify.isVerified,
+        isSuccess:  verify.isSuccess && vnp_ResponseCode === '00',
+        orderId,
+        message:    verify.message,
+      };
+    } catch (error) {
+      this.logger.error('[VNPay Return] Lỗi xác thực', error?.message);
+      return { isVerified: false, isSuccess: false, message: 'Verify error' };
+    }
+  }
+
   // ─── GET /api/registrations/payment/status/:orderId ─────────────────────────
   async getPaymentStatus(orderId: string) {
     const registration = await this.registrationModel
@@ -220,9 +334,11 @@ export class RegistrationsService {
 
     return {
       orderId,
-      paymentStatus: registration.paymentStatus,
-      momoTransId:   registration.momoTransId ?? null,
-      studentName:   registration.studentName,
+      paymentStatus:  registration.paymentStatus,
+      paymentMethod:  registration.paymentMethod,
+      momoTransId:    registration.momoTransId   ?? null,
+      vnpayTransId:   registration.vnpayTransId  ?? null,
+      studentName:    registration.studentName,
     };
   }
 }

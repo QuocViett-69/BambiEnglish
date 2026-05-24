@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RegistrationSchema = exports.Registration = exports.PaymentStatus = void 0;
+exports.RegistrationSchema = exports.Registration = exports.PaymentMethod = exports.PaymentStatus = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 var PaymentStatus;
@@ -18,13 +18,20 @@ var PaymentStatus;
     PaymentStatus["SUCCESS"] = "SUCCESS";
     PaymentStatus["FAILED"] = "FAILED";
 })(PaymentStatus || (exports.PaymentStatus = PaymentStatus = {}));
+var PaymentMethod;
+(function (PaymentMethod) {
+    PaymentMethod["MOMO"] = "momo";
+    PaymentMethod["VNPAY"] = "vnpay";
+})(PaymentMethod || (exports.PaymentMethod = PaymentMethod = {}));
 let Registration = class Registration {
     studentName;
     parentPhone;
     courseId;
     paymentStatus;
+    paymentMethod;
     orderId;
     momoTransId;
+    vnpayTransId;
 };
 exports.Registration = Registration;
 __decorate([
@@ -44,6 +51,10 @@ __decorate([
     __metadata("design:type", String)
 ], Registration.prototype, "paymentStatus", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ enum: PaymentMethod, default: PaymentMethod.MOMO }),
+    __metadata("design:type", String)
+], Registration.prototype, "paymentMethod", void 0);
+__decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Registration.prototype, "orderId", void 0);
@@ -51,6 +62,10 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Registration.prototype, "momoTransId", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Registration.prototype, "vnpayTransId", void 0);
 exports.Registration = Registration = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Registration);

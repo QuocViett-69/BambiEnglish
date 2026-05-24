@@ -5,13 +5,19 @@ export declare enum PaymentStatus {
     SUCCESS = "SUCCESS",
     FAILED = "FAILED"
 }
+export declare enum PaymentMethod {
+    MOMO = "momo",
+    VNPAY = "vnpay"
+}
 export declare class Registration {
     studentName: string;
     parentPhone: string;
     courseId: Types.ObjectId;
     paymentStatus: PaymentStatus;
+    paymentMethod: PaymentMethod;
     orderId: string;
     momoTransId: string;
+    vnpayTransId: string;
 }
 export declare const RegistrationSchema: import("mongoose").Schema<Registration, import("mongoose").Model<Registration, any, any, any, any, any, Registration>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Registration, Document<unknown, {}, Registration, {
     id: string;
@@ -58,6 +64,15 @@ export declare const RegistrationSchema: import("mongoose").Schema<Registration,
     }, "id"> & {
         id: string;
     }> | undefined;
+    paymentMethod?: import("mongoose").SchemaDefinitionProperty<PaymentMethod, Registration, Document<unknown, {}, Registration, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Registration & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
     orderId?: import("mongoose").SchemaDefinitionProperty<string, Registration, Document<unknown, {}, Registration, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Registration & {
@@ -68,6 +83,15 @@ export declare const RegistrationSchema: import("mongoose").Schema<Registration,
         id: string;
     }> | undefined;
     momoTransId?: import("mongoose").SchemaDefinitionProperty<string, Registration, Document<unknown, {}, Registration, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Registration & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    vnpayTransId?: import("mongoose").SchemaDefinitionProperty<string, Registration, Document<unknown, {}, Registration, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Registration & {
         _id: Types.ObjectId;

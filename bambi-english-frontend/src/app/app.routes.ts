@@ -7,6 +7,7 @@ import { CourseDetailComponent }  from './pages/course-detail/course-detail.comp
 import { CheckoutComponent }      from './pages/checkout/checkout.component';
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 import { MockMomoComponent }      from './pages/mock-momo/mock-momo.component';
+import { MockVnpayComponent }     from './pages/mock-vnpay/mock-vnpay.component';
 import { ScheduleComponent }      from './pages/schedule/schedule.component';
 
 export const routes: Routes = [
@@ -18,7 +19,7 @@ export const routes: Routes = [
   { path: 'dang-ky/:id',    component: CheckoutComponent,      title: 'Đăng ký khóa học' },
   { path: 'payment-result', component: PaymentResultComponent, title: 'Kết quả thanh toán' },
   { path: 'mock-momo',      component: MockMomoComponent,      title: 'Cổng thanh toán MoMo' },
+  { path: 'mock-vnpay',     component: MockVnpayComponent,     title: 'Cổng thanh toán VNPay' },
   { path: 'lich-hoc',       component: ScheduleComponent,      title: 'Lịch học' },
   { path: '**',             redirectTo: '' },
 ];
-

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   CreateRegistrationDto,
@@ -17,10 +17,25 @@ export class RegistrationService {
     return this.http.post<RegistrationResponse>(`${this.baseUrl}/register`, dto);
   }
 
-  // Gọi sau khi MoMo redirect về /payment-result để lấy trạng thái chính xác từ DB
+  // Gọi sau khi redirect về /payment-result để lấy trạng thái chính xác từ DB
   getPaymentStatus(orderId: string): Observable<PaymentStatusResponse> {
     return this.http.get<PaymentStatusResponse>(
       `${this.baseUrl}/payment/status/${orderId}`,
     );
   }
+
+  // Gửi toàn bộ params VNPay trả về cho backend để verify chữ ký & cập nhật DB
+  verifyVnpayReturn(queryParams: Record<string, string>): Observable<{
+    isVerified: boolean;
+    isSuccess: boolean;
+    orderId: string;
+    message: string;
+  }> {
+    let params = new HttpParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      params = params.set(key, value);
+    });
+    return this.http.get<any>(`${this.baseUrl}/vnpay-return`, { params });
+  }
 }
+
