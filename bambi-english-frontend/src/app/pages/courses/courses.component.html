@@ -1,0 +1,84 @@
+<!-- Header -->
+<div class="bg-gradient-to-r from-bambi-green to-teal-500 py-16 px-4 relative overflow-hidden">
+  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+  <div class="max-w-7xl mx-auto text-center relative z-10">
+    <h1 class="text-5xl font-black font-display text-white mb-4 drop-shadow-md">Chương trình đào tạo</h1>
+    <p class="text-xl text-white/90 max-w-2xl mx-auto">Lộ trình học tiếng Anh chuẩn Quốc tế Cambridge được thiết kế chuyên biệt cho từng độ tuổi, giúp trẻ phát triển toàn diện 4 kỹ năng.</p>
+  </div>
+</div>
+
+<div class="bg-gray-50 py-12 px-4 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Filter Section (Mock) -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm mb-12 flex flex-col md:flex-row gap-6 items-center justify-between border border-gray-100">
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <span class="font-bold text-gray-700 whitespace-nowrap">Độ tuổi:</span>
+        <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full no-scrollbar">
+          <button class="px-5 py-2 rounded-full bg-bambi-orange text-white font-bold text-sm whitespace-nowrap shadow-md">Tất cả</button>
+          <button class="px-5 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-bambi-orange font-bold text-sm whitespace-nowrap transition-colors">4-6 tuổi</button>
+          <button class="px-5 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-bambi-orange font-bold text-sm whitespace-nowrap transition-colors">6-11 tuổi</button>
+          <button class="px-5 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-bambi-orange font-bold text-sm whitespace-nowrap transition-colors">11-15 tuổi</button>
+        </div>
+      </div>
+      <div class="w-full md:w-64">
+        <select class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-bambi-orange/50 focus:border-bambi-orange transition-all appearance-none font-medium">
+          <option>Tất cả cơ sở</option>
+          <option>Quận 1</option>
+          <option>Quận 7</option>
+          <option>Quận 10</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="flex justify-center py-20">
+      <div class="w-16 h-16 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div *ngIf="!loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let course of courses()" class="bg-white rounded-3xl shadow-md hover:shadow-xl overflow-hidden transition-all duration-300 border border-gray-100 flex flex-col group">
+        <div class="relative h-56 overflow-hidden">
+          <img [src]="course.imageUrl" [alt]="course.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+          <div class="absolute top-4 left-4">
+            <span class="bg-white/90 backdrop-blur text-bambi-orange text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm">
+              {{ course.title.includes('Mẫu giáo') ? '4-6 Tuổi' : '6-11 Tuổi' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="font-black font-display text-2xl text-gray-800 mb-3 group-hover:text-bambi-orange transition-colors">{{ course.title }}</h3>
+          <p class="text-gray-600 text-sm mb-6 flex-1">{{ course.shortDescription }}</p>
+          
+          <div class="bg-orange-50/50 rounded-xl p-4 mb-6 border border-orange-100/50">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-500 font-medium">Lịch học:</span>
+              <span class="text-sm font-bold text-gray-700">2 buổi/tuần</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500 font-medium">Học phí:</span>
+              <span class="text-lg font-black text-bambi-orange">{{ formatPrice(course.price) }}</span>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-auto">
+            <a [routerLink]="['/khoa-hoc', course._id]" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-xl transition-colors">
+              Chi tiết
+            </a>
+            <a [routerLink]="['/dang-ky', course._id]" class="flex-1 text-center bg-bambi-orange hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md shadow-orange-500/30">
+              Đăng ký ngay
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="!loading() && courses().length === 0" class="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
+      <div class="mb-4"><span class="material-symbols-outlined text-[64px] text-gray-400">search</span></div>
+      <h3 class="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy khóa học</h3>
+      <p class="text-gray-500">Vui lòng thử nghiệm bộ lọc khác hoặc quay lại sau.</p>
+    </div>
+  </div>
+</div>

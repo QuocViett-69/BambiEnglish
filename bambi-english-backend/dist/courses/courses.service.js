@@ -25,8 +25,28 @@ let CoursesService = class CoursesService {
     async findAll() {
         return this.courseModel.find({ status: 'active' }).exec();
     }
+    async findAllAdmin() {
+        return this.courseModel.find().sort({ createdAt: -1 }).exec();
+    }
     async findById(id) {
         return this.courseModel.findById(id).exec();
+    }
+    async create(dto) {
+        const course = new this.courseModel(dto);
+        return course.save();
+    }
+    async update(id, dto) {
+        const course = await this.courseModel
+            .findByIdAndUpdate(id, dto, { new: true })
+            .exec();
+        if (!course)
+            throw new common_1.NotFoundException(`Không tìm thấy khóa học: ${id}`);
+        return course;
+    }
+    async delete(id) {
+        const result = await this.courseModel.findByIdAndDelete(id).exec();
+        if (!result)
+            throw new common_1.NotFoundException(`Không tìm thấy khóa học: ${id}`);
     }
 };
 exports.CoursesService = CoursesService;

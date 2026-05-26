@@ -5,6 +5,8 @@ import { CoursesModule } from './courses/courses.module';
 import { RegistrationsModule } from './registrations/registrations.module';
 import { SeedService } from './seed/seed.service';
 import { Course, CourseSchema } from './courses/course.schema';
+import { SettingsModule } from './settings/settings.module';
+import { TrialsModule } from './trials/trials.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { Course, CourseSchema } from './courses/course.schema';
     HttpModule,
     CoursesModule,
     RegistrationsModule,
+    SettingsModule,
+    TrialsModule,
   ],
   providers: [SeedService],
 })

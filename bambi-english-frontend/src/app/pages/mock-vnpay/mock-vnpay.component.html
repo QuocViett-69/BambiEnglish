@@ -89,11 +89,7 @@
       <!-- Step 2: Nhập OTP -->
       <div *ngIf="step() === 2" class="text-center">
         <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-[#005BAA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-            </path>
-          </svg>
+          <span class="material-symbols-outlined text-[32px] text-[#005BAA]">lock</span>
         </div>
 
         <h3 class="font-bold text-gray-800 mb-2">Xác thực OTP</h3>
@@ -120,10 +116,7 @@
                  disabled:opacity-70 transition-colors"
         >
           <span *ngIf="loading()">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <span class="material-symbols-outlined animate-spin mr-2 align-middle">autorenew</span>
             Đang xác thực...
           </span>
           <span *ngIf="!loading()">Xác nhận thanh toán</span>
@@ -132,10 +125,9 @@
 
     </div>
 
-    <!-- Footer -->
     <div class="bg-gray-50 px-6 py-3 text-center border-t">
-      <p class="text-xs text-gray-400">
-        🔒 Giao dịch được bảo mật bởi VNPay · Môi trường Sandbox
+      <p class="text-xs text-gray-400 flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-[14px]">lock</span> Giao dịch được bảo mật bởi VNPay · Môi trường Sandbox
       </p>
     </div>
   </div>

@@ -17,14 +17,14 @@
         [routerLinkActiveOptions]="{ exact: item.route === '/' }"
         class="flex flex-col items-center gap-0.5 text-sm text-gray-600 hover:text-bambi-orange transition-colors pb-1"
       >
-        <span class="text-xl">{{ item.icon }}</span>
+        <span class="material-symbols-outlined text-[20px]">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
       </a>
     </nav>
 
     <!-- Mobile Hamburger -->
-    <button class="md:hidden text-gray-600 text-2xl" (click)="toggleMenu()">
-      {{ mobileMenuOpen ? '✕' : '☰' }}
+    <button class="md:hidden text-gray-600 flex items-center justify-center" (click)="toggleMenu()">
+      <span class="material-symbols-outlined text-[28px]">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
     </button>
   </div>
 
@@ -36,7 +36,7 @@
       (click)="toggleMenu()"
       class="flex items-center gap-3 text-gray-700 hover:text-bambi-orange font-medium py-1"
     >
-      <span>{{ item.icon }}</span>
+      <span class="material-symbols-outlined text-[20px]">{{ item.icon }}</span>
       <span>{{ item.label }}</span>
     </a>
   </div>

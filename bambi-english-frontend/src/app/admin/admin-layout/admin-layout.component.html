@@ -1,0 +1,58 @@
+<div class="min-h-screen bg-gray-50 flex">
+  <!-- Sidebar -->
+  <aside class="bg-gray-900 text-white w-64 flex-shrink-0 transition-all duration-300" [class.-ml-64]="!isSidebarOpen">
+    <div class="h-16 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800">
+      <a routerLink="/admin" class="text-xl font-black font-display text-white tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-bambi-yellow">pets</span> <span class="text-bambi-yellow">Bambi</span> Admin
+      </a>
+    </div>
+
+    <nav class="p-4 space-y-2">
+      <a routerLink="/admin/courses" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange" class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
+        <span class="material-symbols-outlined">library_books</span> Quản lý Khóa học
+      </a>
+      <a routerLink="/admin/branches" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange" class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
+        <span class="material-symbols-outlined">location_on</span> Quản lý Cơ sở
+      </a>
+      <a routerLink="/admin/trials" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange" class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
+        <span class="material-symbols-outlined">assignment</span> Đăng ký học thử
+      </a>
+      <a routerLink="/admin/settings" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange" class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
+        <span class="material-symbols-outlined">settings</span> Cài đặt
+      </a>
+      
+      <div class="pt-8 mt-8 border-t border-gray-800">
+        <a routerLink="/" class="block px-4 py-3 rounded-lg text-gray-400 hover:text-white transition-colors flex items-center gap-3 font-medium">
+          <span class="material-symbols-outlined">language</span> Xem Website
+        </a>
+        <button class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-red-400 transition-colors flex items-center gap-3 font-medium mt-2">
+          <span class="material-symbols-outlined">logout</span> Đăng xuất
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 bg-white shadow-sm flex items-center px-4 justify-between sticky top-0 z-10 border-b border-gray-200">
+      <button (click)="toggleSidebar()" class="text-gray-500 hover:text-gray-800 focus:outline-none p-2 rounded-lg hover:bg-gray-100 flex items-center justify-center">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none">
+            <img src="https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff" alt="Admin" class="w-8 h-8 rounded-full border border-gray-200">
+            <span class="hidden md:inline">Admin Bambi</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

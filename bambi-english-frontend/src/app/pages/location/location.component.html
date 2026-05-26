@@ -1,15 +1,55 @@
-<div class="max-w-4xl mx-auto px-4 py-12">
-  <h1 class="text-3xl font-black font-display mb-8 text-gray-800">📍 Địa điểm</h1>
-  <div class="grid md:grid-cols-2 gap-6">
-    <div class="bg-white rounded-2xl shadow p-6">
-      <h2 class="font-bold text-lg mb-2 text-bambi-orange">Cơ sở 1 – Quận 1</h2>
-      <p class="text-gray-600">123 Nguyễn Huệ, P. Bến Nghé, Q.1, TP.HCM</p>
-      <p class="text-gray-500 text-sm mt-1">📞 028 3823 xxxx</p>
+<!-- Header -->
+<div class="bg-gradient-to-r from-bambi-orange to-yellow-500 py-16 px-4 relative overflow-hidden">
+  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+  <div class="max-w-7xl mx-auto text-center relative z-10">
+    <h1 class="text-5xl font-black font-display text-white mb-4 drop-shadow-md">Hệ thống cơ sở</h1>
+    <p class="text-xl text-white/90 max-w-2xl mx-auto">Bambi English hiện có hơn 15 cơ sở trải dài khắp các quận huyện tại TP.HCM, mang đến sự tiện lợi tối đa cho phụ huynh đưa đón bé.</p>
+  </div>
+</div>
+
+<div class="bg-gray-50 py-12 px-4 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Filter Mock -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm mb-12 flex justify-center border border-gray-100">
+      <div class="w-full max-w-md relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-gray-400">search</span>
+        </div>
+        <input type="text" placeholder="Tìm kiếm theo quận (VD: Quận 1, Quận 7...)" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all">
+      </div>
     </div>
-    <div class="bg-white rounded-2xl shadow p-6">
-      <h2 class="font-bold text-lg mb-2 text-bambi-orange">Cơ sở 2 – Quận 7</h2>
-      <p class="text-gray-600">456 Nguyễn Thị Thập, P. Tân Phú, Q.7, TP.HCM</p>
-      <p class="text-gray-500 text-sm mt-1">📞 028 5416 xxxx</p>
+
+    <!-- Branches Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div *ngFor="let branch of branches" class="bg-white rounded-3xl shadow-sm hover:shadow-xl p-6 border border-gray-100 transition-all duration-300 group flex flex-col h-full">
+        <div class="flex items-center justify-between mb-4">
+          <span class="bg-orange-100 text-bambi-orange font-black text-xs px-3 py-1 rounded-full">{{ branch.district }}</span>
+          <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-bambi-orange group-hover:bg-orange-50 transition-colors">
+            <span class="material-symbols-outlined text-[20px]">location_on</span>
+          </div>
+        </div>
+        
+        <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-bambi-orange transition-colors">{{ branch.name }}</h3>
+        
+        <div class="space-y-3 mt-4 flex-1">
+          <div class="flex items-start text-gray-600">
+            <span class="material-symbols-outlined mr-2 mt-0.5 text-gray-400 flex-shrink-0 text-[20px]">home</span>
+            <span class="text-sm leading-relaxed">{{ branch.address }}</span>
+          </div>
+          <div class="flex items-start text-gray-600">
+            <span class="material-symbols-outlined mr-2 mt-0.5 text-gray-400 flex-shrink-0 text-[20px]">call</span>
+            <span class="text-sm font-bold">{{ branch.phone }}</span>
+          </div>
+          <div class="flex items-start text-gray-600">
+            <span class="material-symbols-outlined mr-2 mt-0.5 text-gray-400 flex-shrink-0 text-[20px]">schedule</span>
+            <span class="text-sm">Thứ 2 - CN: 08:00 - 21:00</span>
+          </div>
+        </div>
+
+        <button class="w-full mt-6 py-2 border-2 border-orange-100 text-bambi-orange font-bold rounded-xl hover:bg-bambi-orange hover:text-white hover:border-bambi-orange transition-all">
+          Xem chỉ đường
+        </button>
+      </div>
     </div>
   </div>
 </div>

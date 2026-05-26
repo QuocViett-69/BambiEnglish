@@ -1,8 +1,8 @@
 <div class="max-w-4xl mx-auto px-4 py-12">
-  <h1 class="text-3xl font-black font-display mb-8 text-gray-800">🎓 Cơ sở vật chất</h1>
+  <h1 class="text-3xl font-black font-display mb-8 text-gray-800 flex items-center"><span class="material-symbols-outlined text-[36px] align-middle mr-2">school</span> Cơ sở vật chất</h1>
   <div class="grid md:grid-cols-3 gap-6">
     <div *ngFor="let item of facilities" class="bg-white rounded-2xl shadow p-6 text-center">
-      <div class="text-4xl mb-3">{{ item.icon }}</div>
+      <div class="mb-3"><span class="material-symbols-outlined text-[40px] text-bambi-orange">{{ item.icon }}</span></div>
       <h3 class="font-bold text-gray-800 mb-1">{{ item.title }}</h3>
       <p class="text-gray-500 text-sm">{{ item.desc }}</p>
     </div>

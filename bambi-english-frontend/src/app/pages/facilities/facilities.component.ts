@@ -9,8 +9,8 @@ import { CommonModule } from '@angular/common';
 })
 export class FacilitiesComponent {
   facilities = [
-    { icon: '🖥️', title: 'Phòng học thông minh', desc: 'Màn hình tương tác 75 inch, âm thanh vòm 5.1' },
-    { icon: '📚', title: 'Thư viện sách', desc: 'Hơn 500 đầu sách thiếu nhi tiếng Anh các cấp độ' },
-    { icon: '🎮', title: 'Góc vui học', desc: 'Board games, flashcards, puzzle tiếng Anh' },
+    { icon: 'computer', title: 'Phòng học thông minh', desc: 'Màn hình tương tác 75 inch, âm thanh vòm 5.1' },
+    { icon: 'menu_book', title: 'Thư viện sách', desc: 'Hơn 500 đầu sách thiếu nhi tiếng Anh các cấp độ' },
+    { icon: 'sports_esports', title: 'Góc vui học', desc: 'Board games, flashcards, puzzle tiếng Anh' },
   ];
 }
