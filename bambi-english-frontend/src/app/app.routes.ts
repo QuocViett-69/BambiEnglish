@@ -12,11 +12,13 @@ import { MockVnpayComponent }     from './pages/mock-vnpay/mock-vnpay.component'
 import { ScheduleComponent }      from './pages/schedule/schedule.component';
 import { ContactComponent }       from './pages/contact/contact.component';
 
-import { AdminLayoutComponent }   from './admin/admin-layout/admin-layout.component';
-import { AdminCoursesComponent }  from './admin/admin-courses/admin-courses.component';
-import { AdminBranchesComponent } from './admin/admin-branches/admin-branches.component';
-import { AdminTrialsComponent }   from './admin/admin-trials/admin-trials.component';
-import { AdminSettingsComponent } from './admin/admin-settings/admin-settings.component';
+import { AdminLayoutComponent }        from './admin/admin-layout/admin-layout.component';
+import { AdminDashboardComponent }     from './admin/admin-dashboard/admin-dashboard.component';
+import { AdminCoursesComponent }       from './admin/admin-courses/admin-courses.component';
+import { AdminBranchesComponent }      from './admin/admin-branches/admin-branches.component';
+import { AdminTrialsComponent }        from './admin/admin-trials/admin-trials.component';
+import { AdminSettingsComponent }      from './admin/admin-settings/admin-settings.component';
+import { AdminRegistrationsComponent } from './admin/admin-registrations/admin-registrations.component';
 
 export const routes: Routes = [
   // Admin Routes
@@ -24,11 +26,12 @@ export const routes: Routes = [
     path: 'admin', 
     component: AdminLayoutComponent,
     children: [
-      { path: '', redirectTo: 'courses', pathMatch: 'full' },
-      { path: 'courses', component: AdminCoursesComponent, title: 'Quản lý Khóa học' },
-      { path: 'branches', component: AdminBranchesComponent, title: 'Quản lý Cơ sở' },
-      { path: 'trials', component: AdminTrialsComponent, title: 'Quản lý Đăng ký học thử' },
-      { path: 'settings', component: AdminSettingsComponent, title: 'Cài đặt hệ thống' },
+      { path: '',              component: AdminDashboardComponent,     title: 'Tổng quan Admin' },
+      { path: 'courses',       component: AdminCoursesComponent,       title: 'Quản lý Khóa học' },
+      { path: 'branches',      component: AdminBranchesComponent,      title: 'Quản lý Cơ sở' },
+      { path: 'trials',        component: AdminTrialsComponent,        title: 'Quản lý Đăng ký học thử' },
+      { path: 'registrations', component: AdminRegistrationsComponent, title: 'Đơn Đăng ký' },
+      { path: 'settings',      component: AdminSettingsComponent,      title: 'Cài đặt hệ thống' },
     ]
   },
 

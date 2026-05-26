@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, Patch } from '@nestjs/common';
 import { RegistrationsService } from './registrations.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 
@@ -45,5 +45,11 @@ export class RegistrationsController {
   @Get('payment/status/:orderId')
   getPaymentStatus(@Param('orderId') orderId: string) {
     return this.registrationsService.getPaymentStatus(orderId);
+  }
+
+  // GET /api/registrations/all — Admin: lấy tất cả đơn đăng ký
+  @Get('all')
+  getAllRegistrations() {
+    return this.registrationsService.findAll();
   }
 }

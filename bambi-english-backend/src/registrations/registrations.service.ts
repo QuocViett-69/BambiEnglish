@@ -341,4 +341,13 @@ export class RegistrationsService {
       studentName:    registration.studentName,
     };
   }
+
+  // ─── GET /api/registrations/all — Admin ────────────────────────────────────
+  async findAll() {
+    return this.registrationModel
+      .find()
+      .populate('courseId', 'title price')
+      .sort({ createdAt: -1 })
+      .exec();
+  }
 }

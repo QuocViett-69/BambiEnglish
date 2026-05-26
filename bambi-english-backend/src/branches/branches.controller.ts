@@ -31,4 +31,28 @@ export class BranchesController {
   remove(@Param('id') id: string) {
     return this.branchesService.remove(id);
   }
+
+  // ─── Review endpoints ──────────────────────────────────────────────────────
+
+  // POST /api/branches/:id/reviews — Thêm đánh giá mới
+  @Post(':id/reviews')
+  addReview(@Param('id') id: string, @Body() reviewData: any) {
+    return this.branchesService.addReview(id, reviewData);
+  }
+
+  // PATCH /api/branches/:id/reviews/:index — Sửa đánh giá theo index
+  @Patch(':id/reviews/:index')
+  updateReview(
+    @Param('id') id: string,
+    @Param('index') index: string,
+    @Body() reviewData: any,
+  ) {
+    return this.branchesService.updateReview(id, parseInt(index), reviewData);
+  }
+
+  // DELETE /api/branches/:id/reviews/:index — Xóa đánh giá theo index
+  @Delete(':id/reviews/:index')
+  deleteReview(@Param('id') id: string, @Param('index') index: string) {
+    return this.branchesService.deleteReview(id, parseInt(index));
+  }
 }

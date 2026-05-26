@@ -1,0 +1,149 @@
+<!-- Loading -->
+<div *ngIf="loading()" class="flex justify-center py-24">
+  <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
+</div>
+
+<div *ngIf="!loading()">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Khóa học -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 group hover:border-bambi-orange transition-colors">
+      <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-bambi-orange text-[24px]">library_books</span>
+      </div>
+      <div>
+        <div class="text-2xl font-black text-gray-800">{{ stats().totalCourses }}</div>
+        <div class="text-xs text-gray-500 font-medium">Khóa học</div>
+        <div class="text-xs text-green-600 font-bold mt-0.5">{{ stats().activeCourses }} đang hiển thị</div>
+      </div>
+    </div>
+
+    <!-- Cơ sở -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:border-bambi-orange transition-colors">
+      <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-blue-500 text-[24px]">location_on</span>
+      </div>
+      <div>
+        <div class="text-2xl font-black text-gray-800">{{ stats().totalBranches }}</div>
+        <div class="text-xs text-gray-500 font-medium">Cơ sở</div>
+        <div class="text-xs text-blue-600 font-bold mt-0.5">Toàn TP.HCM</div>
+      </div>
+    </div>
+
+    <!-- Đăng ký học thử -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 hover:border-bambi-orange transition-colors">
+      <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-purple-500 text-[24px]">assignment</span>
+      </div>
+      <div>
+        <div class="text-2xl font-black text-gray-800">{{ stats().totalTrials }}</div>
+        <div class="text-xs text-gray-500 font-medium">Đăng ký học thử</div>
+        <div class="text-xs text-orange-600 font-bold mt-0.5">{{ stats().newTrials }} chờ xử lý</div>
+      </div>
+    </div>
+
+    <!-- Doanh thu -->
+    <div class="bg-gradient-to-br from-bambi-orange to-yellow-500 rounded-2xl p-5 shadow-sm flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-white text-[24px]">payments</span>
+      </div>
+      <div>
+        <div class="text-xl font-black text-white leading-tight">{{ formatPrice(stats().revenue) }}</div>
+        <div class="text-xs text-white/80 font-medium">Doanh thu</div>
+        <div class="text-xs text-white font-bold mt-0.5">{{ stats().successRegistrations }} đơn thành công</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two columns: Recent Registrations + Recent Trials -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Recent Registrations -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-black text-gray-800 flex items-center gap-2">
+          <span class="material-symbols-outlined text-bambi-orange">receipt_long</span>
+          Đăng ký gần đây
+        </h3>
+        <a routerLink="/admin/registrations" class="text-xs font-bold text-bambi-orange hover:underline">Xem tất cả →</a>
+      </div>
+      <div class="divide-y divide-gray-50">
+        <div *ngFor="let reg of recentRegistrations()" class="px-5 py-3 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+               [class.bg-green-100]="reg.paymentStatus === 'SUCCESS'"
+               [class.bg-red-100]="reg.paymentStatus === 'FAILED'"
+               [class.bg-yellow-100]="reg.paymentStatus === 'PENDING'">
+            <span class="material-symbols-outlined text-[16px]"
+                  [class.text-green-600]="reg.paymentStatus === 'SUCCESS'"
+                  [class.text-red-600]="reg.paymentStatus === 'FAILED'"
+                  [class.text-yellow-600]="reg.paymentStatus === 'PENDING'">
+              {{ reg.paymentStatus === 'SUCCESS' ? 'check_circle' : reg.paymentStatus === 'FAILED' ? 'cancel' : 'schedule' }}
+            </span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold text-gray-800 truncate">{{ reg.studentName }}</div>
+            <div class="text-xs text-gray-500 truncate">{{ reg.courseId?.title ?? 'N/A' }}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-xs font-black text-bambi-orange">{{ formatPrice(reg.courseId?.price ?? 0) }}</div>
+            <div class="text-xs text-gray-400">{{ formatDate(reg.createdAt) }}</div>
+          </div>
+        </div>
+        <div *ngIf="recentRegistrations().length === 0" class="px-5 py-8 text-center text-gray-400 text-sm">
+          Chưa có đăng ký nào
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Trials -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-black text-gray-800 flex items-center gap-2">
+          <span class="material-symbols-outlined text-purple-500">assignment</span>
+          Học thử gần đây
+        </h3>
+        <a routerLink="/admin/trials" class="text-xs font-bold text-bambi-orange hover:underline">Xem tất cả →</a>
+      </div>
+      <div class="divide-y divide-gray-50">
+        <div *ngFor="let trial of recentTrials()" class="px-5 py-3 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-purple-500 text-[16px]">person</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold text-gray-800 truncate">{{ trial.parentName }}</div>
+            <div class="text-xs text-gray-500">{{ trial.phone }}</div>
+          </div>
+          <span class="text-xs font-bold px-2 py-1 rounded-full shrink-0"
+                [class.bg-blue-100]="trial.status === 'Mới'" [class.text-blue-700]="trial.status === 'Mới'"
+                [class.bg-yellow-100]="trial.status === 'Đã liên hệ'" [class.text-yellow-700]="trial.status === 'Đã liên hệ'"
+                [class.bg-green-100]="trial.status === 'Đã xong'" [class.text-green-700]="trial.status === 'Đã xong'">
+            {{ trial.status }}
+          </span>
+        </div>
+        <div *ngIf="recentTrials().length === 0" class="px-5 py-8 text-center text-gray-400 text-sm">
+          Chưa có đăng ký học thử nào
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <a routerLink="/admin/courses" class="bg-white rounded-xl p-4 border border-gray-100 hover:border-bambi-orange hover:shadow-md transition-all flex items-center gap-3">
+      <span class="material-symbols-outlined text-bambi-orange">library_books</span>
+      <span class="text-sm font-bold text-gray-700">Quản lý Khóa học</span>
+    </a>
+    <a routerLink="/admin/branches" class="bg-white rounded-xl p-4 border border-gray-100 hover:border-bambi-orange hover:shadow-md transition-all flex items-center gap-3">
+      <span class="material-symbols-outlined text-blue-500">location_on</span>
+      <span class="text-sm font-bold text-gray-700">Quản lý Cơ sở</span>
+    </a>
+    <a routerLink="/admin/registrations" class="bg-white rounded-xl p-4 border border-gray-100 hover:border-bambi-orange hover:shadow-md transition-all flex items-center gap-3">
+      <span class="material-symbols-outlined text-green-500">receipt_long</span>
+      <span class="text-sm font-bold text-gray-700">Đơn đăng ký</span>
+    </a>
+    <a routerLink="/admin/trials" class="bg-white rounded-xl p-4 border border-gray-100 hover:border-bambi-orange hover:shadow-md transition-all flex items-center gap-3">
+      <span class="material-symbols-outlined text-purple-500">assignment</span>
+      <span class="text-sm font-bold text-gray-700">Học thử</span>
+    </a>
+  </div>
+</div>

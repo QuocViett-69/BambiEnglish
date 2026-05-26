@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BranchService } from '../../services/branch.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-branches',
@@ -13,13 +14,23 @@ export class AdminBranchesComponent implements OnInit {
   branches = signal<any[]>([]);
   loading = signal(true);
 
+  // Branch modal
   isModalOpen = false;
   editingBranch: any = null;
 
+  // Review list modal (view + manage)
   isReviewModalOpen = false;
   reviewBranch: any = null;
 
-  constructor(private branchService: BranchService) {}
+  // Review form modal (add / edit)
+  isReviewFormOpen = false;
+  editingReview: any = null;
+  editingReviewIndex: number = -1;
+  savingReview = signal(false);
+
+  private api = 'http://localhost:3000/api';
+
+  constructor(private branchService: BranchService, private http: HttpClient) {}
 
   ngOnInit() {
     this.loadBranches();
@@ -29,10 +40,11 @@ export class AdminBranchesComponent implements OnInit {
     this.loading.set(true);
     this.branchService.getAll().subscribe({
       next: (data) => { this.branches.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: () => this.loading.set(false),
     });
   }
 
+  // ─── Branch CRUD ────────────────────────────────────────────────────────────
   openModal(branch?: any) {
     this.editingBranch = branch
       ? { ...branch }
@@ -61,14 +73,14 @@ export class AdminBranchesComponent implements OnInit {
 
   deleteBranch(id: string) {
     if (confirm('Bạn có chắc chắn muốn xóa cơ sở này?')) {
-      this.branchService.delete(id).subscribe(() => {
-        this.loadBranches();
-      });
+      this.branchService.delete(id).subscribe(() => this.loadBranches());
     }
   }
 
+  // ─── Review List Modal ──────────────────────────────────────────────────────
   openReviewModal(branch: any) {
-    this.reviewBranch = branch;
+    // Đồng bộ lại dữ liệu branch mới nhất từ danh sách
+    this.reviewBranch = this.branches().find(b => b._id === branch._id) ?? branch;
     this.isReviewModalOpen = true;
   }
 
@@ -77,6 +89,66 @@ export class AdminBranchesComponent implements OnInit {
     this.reviewBranch = null;
   }
 
+  // ─── Review Form (Add / Edit) ───────────────────────────────────────────────
+  openAddReview() {
+    this.editingReview = { author: '', rating: 5, comment: '', date: new Date().toISOString().slice(0, 10), avatar: '' };
+    this.editingReviewIndex = -1;
+    this.isReviewFormOpen = true;
+  }
+
+  openEditReview(review: any, index: number) {
+    this.editingReview = { ...review };
+    this.editingReviewIndex = index;
+    this.isReviewFormOpen = true;
+  }
+
+  closeReviewForm() {
+    this.isReviewFormOpen = false;
+    this.editingReview = null;
+    this.editingReviewIndex = -1;
+  }
+
+  saveReview() {
+    if (!this.reviewBranch) return;
+    this.savingReview.set(true);
+    const branchId = this.reviewBranch._id;
+
+    const request$ = this.editingReviewIndex === -1
+      ? this.http.post<any>(`${this.api}/branches/${branchId}/reviews`, this.editingReview)
+      : this.http.patch<any>(`${this.api}/branches/${branchId}/reviews/${this.editingReviewIndex}`, this.editingReview);
+
+    request$.subscribe({
+      next: (updatedBranch) => {
+        // Cập nhật local state
+        this.branches.update(list =>
+          list.map(b => b._id === branchId ? updatedBranch : b)
+        );
+        this.reviewBranch = updatedBranch;
+        this.savingReview.set(false);
+        this.closeReviewForm();
+      },
+      error: () => this.savingReview.set(false),
+    });
+  }
+
+  deleteReview(index: number) {
+    if (!confirm('Xóa đánh giá này?')) return;
+    const branchId = this.reviewBranch._id;
+    this.http.delete<any>(`${this.api}/branches/${branchId}/reviews/${index}`).subscribe({
+      next: (updatedBranch) => {
+        this.branches.update(list =>
+          list.map(b => b._id === branchId ? updatedBranch : b)
+        );
+        this.reviewBranch = updatedBranch;
+      },
+    });
+  }
+
+  setRating(star: number) {
+    if (this.editingReview) this.editingReview.rating = star;
+  }
+
+  // ─── Rating helpers ─────────────────────────────────────────────────────────
   getAverageRating(reviews: any[]): number {
     if (!reviews || reviews.length === 0) return 0;
     const sum = reviews.reduce((acc, r) => acc + r.rating, 0);

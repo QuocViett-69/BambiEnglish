@@ -37,6 +37,33 @@ let BranchesService = class BranchesService {
     remove(id) {
         return this.branchModel.findByIdAndDelete(id).exec();
     }
+    async addReview(branchId, reviewData) {
+        const branch = await this.branchModel.findById(branchId);
+        if (!branch)
+            throw new common_1.NotFoundException('Branch not found');
+        const review = { ...reviewData, _id: new mongoose_2.Types.ObjectId() };
+        branch.reviews.push(review);
+        return branch.save();
+    }
+    async updateReview(branchId, reviewIndex, reviewData) {
+        const branch = await this.branchModel.findById(branchId);
+        if (!branch)
+            throw new common_1.NotFoundException('Branch not found');
+        if (reviewIndex < 0 || reviewIndex >= branch.reviews.length) {
+            throw new common_1.NotFoundException('Review not found');
+        }
+        Object.assign(branch.reviews[reviewIndex], reviewData);
+        branch.markModified('reviews');
+        return branch.save();
+    }
+    async deleteReview(branchId, reviewIndex) {
+        const branch = await this.branchModel.findById(branchId);
+        if (!branch)
+            throw new common_1.NotFoundException('Branch not found');
+        branch.reviews.splice(reviewIndex, 1);
+        branch.markModified('reviews');
+        return branch.save();
+    }
 };
 exports.BranchesService = BranchesService;
 exports.BranchesService = BranchesService = __decorate([

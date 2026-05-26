@@ -303,6 +303,13 @@ let RegistrationsService = RegistrationsService_1 = class RegistrationsService {
             studentName: registration.studentName,
         };
     }
+    async findAll() {
+        return this.registrationModel
+            .find()
+            .populate('courseId', 'title price')
+            .sort({ createdAt: -1 })
+            .exec();
+    }
 };
 exports.RegistrationsService = RegistrationsService;
 exports.RegistrationsService = RegistrationsService = RegistrationsService_1 = __decorate([

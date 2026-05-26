@@ -37,6 +37,15 @@ let BranchesController = class BranchesController {
     remove(id) {
         return this.branchesService.remove(id);
     }
+    addReview(id, reviewData) {
+        return this.branchesService.addReview(id, reviewData);
+    }
+    updateReview(id, index, reviewData) {
+        return this.branchesService.updateReview(id, parseInt(index), reviewData);
+    }
+    deleteReview(id, index) {
+        return this.branchesService.deleteReview(id, parseInt(index));
+    }
 };
 exports.BranchesController = BranchesController;
 __decorate([
@@ -74,6 +83,31 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BranchesController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(':id/reviews'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], BranchesController.prototype, "addReview", null);
+__decorate([
+    (0, common_1.Patch)(':id/reviews/:index'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('index')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], BranchesController.prototype, "updateReview", null);
+__decorate([
+    (0, common_1.Delete)(':id/reviews/:index'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('index')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], BranchesController.prototype, "deleteReview", null);
 exports.BranchesController = BranchesController = __decorate([
     (0, common_1.Controller)('branches'),
     __metadata("design:paramtypes", [branches_service_1.BranchesService])

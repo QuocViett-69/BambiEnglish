@@ -1,0 +1,99 @@
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+  <!-- Header + Stats Row -->
+  <div class="p-6 border-b border-gray-100">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h2 class="text-2xl font-black text-gray-800">Đơn Đăng ký Khóa học</h2>
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-xl px-4 py-2 flex items-center gap-2">
+          <span class="material-symbols-outlined text-green-600 text-[18px]">payments</span>
+          <span class="text-sm font-bold text-green-700">Tổng doanh thu: {{ formatPrice(totalRevenue) }}</span>
+        </div>
+        <button (click)="exportCSV()" [disabled]="filtered().length === 0"
+                class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition-colors disabled:opacity-50">
+          <span class="material-symbols-outlined text-[18px]">download</span> Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-col sm:flex-row gap-3 mt-4">
+      <div class="relative flex-1 max-w-sm">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[18px]">search</span>
+        <input type="text" [value]="searchQuery" (input)="onSearch($any($event.target).value)"
+               placeholder="Tìm học viên, SĐT, mã đơn, khóa học..."
+               class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none text-sm">
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button *ngFor="let s of [{v:'ALL',l:'Tất cả'},{v:'PENDING',l:'Chờ TT'},{v:'SUCCESS',l:'Thành công'},{v:'FAILED',l:'Thất bại'}]"
+                (click)="onStatusFilter(s.v)"
+                [class.bg-bambi-orange]="statusFilter === s.v" [class.text-white]="statusFilter === s.v"
+                [class.bg-gray-100]="statusFilter !== s.v" [class.text-gray-600]="statusFilter !== s.v"
+                class="px-3 py-2 rounded-xl text-xs font-bold transition-colors">
+          {{ s.l }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="flex justify-center py-20">
+    <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading() && filtered().length === 0" class="flex flex-col items-center justify-center py-20 text-gray-400">
+    <span class="material-symbols-outlined text-5xl mb-2">receipt_long</span>
+    <p class="font-bold">Không tìm thấy đơn đăng ký nào</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading() && filtered().length > 0" class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+          <th class="p-4 font-bold">Ngày ĐK</th>
+          <th class="p-4 font-bold">Học viên</th>
+          <th class="p-4 font-bold">Khóa học</th>
+          <th class="p-4 font-bold">Học phí</th>
+          <th class="p-4 font-bold">Thanh toán</th>
+          <th class="p-4 font-bold text-center">Trạng thái</th>
+          <th class="p-4 font-bold">Mã giao dịch</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        <tr *ngFor="let reg of filtered()" class="hover:bg-orange-50/20 transition-colors">
+          <td class="p-4 text-xs text-gray-500 whitespace-nowrap">{{ formatDate(reg.createdAt) }}</td>
+          <td class="p-4">
+            <div class="font-bold text-gray-800 text-sm">{{ reg.studentName }}</div>
+            <div class="text-xs text-gray-500">{{ reg.parentPhone }}</div>
+          </td>
+          <td class="p-4">
+            <div class="text-sm text-gray-700 font-medium max-w-[180px] line-clamp-2">{{ reg.courseId?.title ?? '–' }}</div>
+          </td>
+          <td class="p-4 font-black text-bambi-orange text-sm whitespace-nowrap">
+            {{ formatPrice(reg.courseId?.price ?? 0) }}
+          </td>
+          <td class="p-4">
+            <span class="flex items-center gap-1 text-xs font-bold"
+                  [class.text-pink-600]="reg.paymentMethod === 'momo'"
+                  [class.text-blue-600]="reg.paymentMethod === 'vnpay'">
+              <span class="material-symbols-outlined text-[14px]">{{ reg.paymentMethod === 'momo' ? 'account_balance_wallet' : 'credit_card' }}</span>
+              {{ methodLabel(reg.paymentMethod) }}
+            </span>
+          </td>
+          <td class="p-4 text-center">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold" [ngClass]="statusClass(reg.paymentStatus)">
+              {{ statusLabel(reg.paymentStatus) }}
+            </span>
+          </td>
+          <td class="p-4 text-xs text-gray-400 font-mono">
+            {{ reg.momoTransId ?? reg.vnpayTransId ?? reg.orderId ?? '–' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="p-4 border-t border-gray-100 text-xs text-gray-400 text-right">
+      Hiển thị {{ filtered().length }} / {{ registrations().length }} đơn
+    </div>
+  </div>
+</div>

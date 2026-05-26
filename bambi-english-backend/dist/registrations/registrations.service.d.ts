@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
-import { RegistrationDocument, PaymentStatus, PaymentMethod } from './registration.schema';
+import { Registration, RegistrationDocument, PaymentStatus, PaymentMethod } from './registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { CoursesService } from '../courses/courses.service';
 export declare class RegistrationsService {
@@ -46,4 +46,11 @@ export declare class RegistrationsService {
         vnpayTransId: string;
         studentName: string;
     }>;
+    findAll(): Promise<(import("mongoose").Document<unknown, {}, RegistrationDocument, {}, import("mongoose").DefaultSchemaOptions> & Registration & import("mongoose").Document<import("mongoose").Types.ObjectId, any, any, Record<string, any>, {}> & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    } & {
+        id: string;
+    })[]>;
 }

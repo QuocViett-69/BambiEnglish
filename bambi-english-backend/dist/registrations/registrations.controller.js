@@ -39,6 +39,9 @@ let RegistrationsController = class RegistrationsController {
     getPaymentStatus(orderId) {
         return this.registrationsService.getPaymentStatus(orderId);
     }
+    getAllRegistrations() {
+        return this.registrationsService.findAll();
+    }
 };
 exports.RegistrationsController = RegistrationsController;
 __decorate([
@@ -83,6 +86,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], RegistrationsController.prototype, "getPaymentStatus", null);
+__decorate([
+    (0, common_1.Get)('all'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], RegistrationsController.prototype, "getAllRegistrations", null);
 exports.RegistrationsController = RegistrationsController = __decorate([
     (0, common_1.Controller)('registrations'),
     __metadata("design:paramtypes", [registrations_service_1.RegistrationsService])
