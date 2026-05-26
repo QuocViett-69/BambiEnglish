@@ -73,6 +73,10 @@ export class AdminRegistrationsComponent implements OnInit {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   }
 
+  formatPriceFull(price: number) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  }
+
   formatDate(date: string) {
     if (!date) return '–';
     return new Date(date).toLocaleString('vi-VN');
@@ -120,5 +124,47 @@ export class AdminRegistrationsComponent implements OnInit {
     a.download = `don-dang-ky-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  exportPDF() {
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) return;
+    const rows = this.filtered().map((r, i) => `
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:8px 12px;color:#666;font-size:12px;">${i + 1}</td>
+        <td style="padding:8px 12px;">
+          <strong>${r.studentName ?? ''}</strong><br>
+          <span style="font-size:11px;color:#888;">${r.parentPhone ?? ''}</span>
+        </td>
+        <td style="padding:8px 12px;font-size:12px;">${r.courseId?.title ?? '–'}</td>
+        <td style="padding:8px 12px;font-weight:bold;color:#ff6b35;">${this.formatPriceFull(r.courseId?.price ?? 0)}</td>
+        <td style="padding:8px 12px;">
+          <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:bold;background:${r.paymentStatus === 'SUCCESS' ? '#dcfce7' : r.paymentStatus === 'FAILED' ? '#fee2e2' : '#fef9c3'};color:${r.paymentStatus === 'SUCCESS' ? '#15803d' : r.paymentStatus === 'FAILED' ? '#b91c1c' : '#a16207'}">
+            ${this.statusLabel(r.paymentStatus)}
+          </span>
+        </td>
+        <td style="padding:8px 12px;font-size:11px;color:#888;">${r.createdAt ? new Date(r.createdAt).toLocaleDateString('vi-VN') : ''}</td>
+      </tr>`);
+    printWindow.document.write(`
+      <!DOCTYPE html><html><head>
+      <meta charset="UTF-8"><title>Báo cáo đơn đăng ký</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 32px; color: #1f2937; }
+        h1 { color: #ff6b35; font-size: 22px; margin-bottom: 4px; }
+        p { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #f9fafb; }
+        th { padding: 10px 12px; text-align: left; font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: .05em; }
+        @media print { body { padding: 0; } }
+      </style></head><body>
+      <h1>🐼 Bambi English — Báo cáo Đăng ký</h1>
+      <p>Xuất ngày: ${new Date().toLocaleString('vi-VN')} — Tổng: ${this.filtered().length} đơn</p>
+      <table>
+        <thead><tr><th>#</th><th>Học viên</th><th>Khóa học</th><th>Học phí</th><th>Trạng thái</th><th>Ngày ĐK</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+      <script>window.print(); window.close();<\/script>
+      </body></html>`);
+    printWindow.document.close();
   }
 }

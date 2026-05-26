@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../services/course.service';
 import { Course } from '../../models/course.model';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-courses',
@@ -12,24 +14,58 @@ import { Course } from '../../models/course.model';
 })
 export class AdminCoursesComponent implements OnInit {
   courses = signal<Course[]>([]);
+  filtered = signal<Course[]>([]);
   loading = signal(true);
-  
+  searchQuery = '';
+  statusFilter = 'ALL';
+
   isModalOpen = false;
   editingCourse: any = null;
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private courseService: CourseService,
+    private toast: ToastService,
+    private confirm: ConfirmService,
+  ) {}
 
-  ngOnInit() {
-    this.loadCourses();
-  }
+  ngOnInit() { this.loadCourses(); }
 
   loadCourses() {
     this.loading.set(true);
-    // Admin lấy tất cả (kể cả hidden)
     this.courseService.getAllAdmin().subscribe({
-      next: (data) => { this.courses.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      next: (data) => {
+        this.courses.set(data);
+        this.applyFilters();
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
     });
+  }
+
+  applyFilters() {
+    let data = this.courses();
+    if (this.statusFilter !== 'ALL') {
+      data = data.filter(c => c.status === this.statusFilter);
+    }
+    const q = this.searchQuery.trim().toLowerCase();
+    if (q) {
+      data = data.filter(c =>
+        (c.title ?? '').toLowerCase().includes(q) ||
+        ((c as any).shortDescription ?? '').toLowerCase().includes(q)
+      );
+    }
+    this.filtered.set(data);
+  }
+
+  onSearch(q: string) { this.searchQuery = q; this.applyFilters(); }
+  onStatusFilter(s: string) { this.statusFilter = s; this.applyFilters(); }
+
+  get countByStatus() {
+    return {
+      all: this.courses().length,
+      active: this.courses().filter(c => c.status === 'active').length,
+      hidden: this.courses().filter(c => c.status === 'hidden').length,
+    };
   }
 
   formatPrice(price: number) {
@@ -43,42 +79,43 @@ export class AdminCoursesComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  closeModal() {
-    this.isModalOpen = false;
-    this.editingCourse = null;
-  }
+  closeModal() { this.isModalOpen = false; this.editingCourse = null; }
 
   saveCourse() {
     const { _id, ...dto } = this.editingCourse;
     if (_id) {
-      // Cập nhật
       this.courseService.update(_id, dto).subscribe({
-        next: () => { this.closeModal(); this.loadCourses(); },
-        error: (err) => alert('Lỗi cập nhật: ' + (err?.error?.message ?? err.message))
+        next: () => { this.closeModal(); this.loadCourses(); this.toast.success('Cập nhật khóa học thành công!'); },
+        error: (err) => this.toast.error('Lỗi: ' + (err?.error?.message ?? 'Không thể cập nhật')),
       });
     } else {
-      // Tạo mới
       this.courseService.create(dto).subscribe({
-        next: () => { this.closeModal(); this.loadCourses(); },
-        error: (err) => alert('Lỗi tạo khóa học: ' + (err?.error?.message ?? err.message))
+        next: () => { this.closeModal(); this.loadCourses(); this.toast.success('Thêm khóa học mới thành công!'); },
+        error: (err) => this.toast.error('Lỗi: ' + (err?.error?.message ?? 'Không thể tạo khóa học')),
       });
     }
   }
 
-  deleteCourse(id: string) {
-    if (confirm('Bạn có chắc chắn muốn xóa khóa học này?')) {
-      this.courseService.delete(id).subscribe({
-        next: () => this.loadCourses(),
-        error: (err) => alert('Lỗi xóa: ' + (err?.error?.message ?? err.message))
-      });
-    }
+  async deleteCourse(id: string, title: string) {
+    const ok = await this.confirm.open({
+      title: 'Xóa khóa học',
+      message: `Bạn có chắc muốn xóa "${title}"? Hành động này không thể hoàn tác.`,
+      confirmText: 'Xóa',
+      danger: true,
+    });
+    if (!ok) return;
+    this.courseService.delete(id).subscribe({
+      next: () => { this.loadCourses(); this.toast.success('Đã xóa khóa học!'); },
+      error: (err) => this.toast.error('Lỗi xóa: ' + (err?.error?.message ?? '')),
+    });
   }
 
   toggleStatus(course: Course) {
     const newStatus = course.status === 'active' ? 'hidden' : 'active';
+    const label = newStatus === 'active' ? 'hiển thị' : 'ẩn';
     this.courseService.update((course as any)._id, { status: newStatus }).subscribe({
-      next: () => this.loadCourses(),
-      error: (err) => alert('Lỗi cập nhật trạng thái: ' + (err?.error?.message ?? err.message))
+      next: () => { this.loadCourses(); this.toast.info(`Đã ${label} khóa học`); },
+      error: (err) => this.toast.error('Lỗi: ' + (err?.error?.message ?? '')),
     });
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../services/toast.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -19,6 +19,7 @@ export class AdminLayoutComponent implements OnInit {
     public toast: ToastService,
     public confirm: ConfirmService,
     private http: HttpClient,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -37,7 +38,11 @@ export class AdminLayoutComponent implements OnInit {
     });
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+  toggleSidebar() { this.isSidebarOpen = !this.isSidebarOpen; }
+
+  logout() {
+    localStorage.removeItem('bambi_admin_auth');
+    localStorage.removeItem('bambi_admin_user');
+    this.router.navigate(['/admin/login']);
   }
 }

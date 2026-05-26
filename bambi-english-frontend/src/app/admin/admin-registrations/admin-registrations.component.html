@@ -10,7 +10,11 @@
         </div>
         <button (click)="exportCSV()" [disabled]="filtered().length === 0"
                 class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition-colors disabled:opacity-50">
-          <span class="material-symbols-outlined text-[18px]">download</span> Export CSV
+          <span class="material-symbols-outlined text-[18px]">download</span> CSV
+        </button>
+        <button (click)="exportPDF()" [disabled]="filtered().length === 0"
+                class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50">
+          <span class="material-symbols-outlined text-[18px]">print</span> PDF
         </button>
       </div>
     </div>

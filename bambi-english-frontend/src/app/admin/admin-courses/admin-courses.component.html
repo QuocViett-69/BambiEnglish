@@ -1,17 +1,53 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
-  <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-    <h2 class="text-2xl font-black text-gray-800">Quản lý Khóa học</h2>
-    <button (click)="openModal()" class="bg-bambi-orange text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition-colors flex items-center gap-2">
-      <span class="material-symbols-outlined">add</span>
-      Thêm Khóa học
-    </button>
+  <!-- Header + Filters -->
+  <div class="p-6 border-b border-gray-100">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-black text-gray-800">Quản lý Khóa học</h2>
+        <p *ngIf="!loading()" class="text-sm text-gray-500 mt-0.5">
+          {{ filtered().length }} / {{ courses().length }} khóa học
+        </p>
+      </div>
+      <button (click)="openModal()" class="bg-bambi-orange text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition-colors flex items-center gap-2 shrink-0">
+        <span class="material-symbols-outlined">add</span> Thêm Khóa học
+      </button>
+    </div>
+
+    <!-- Search + Status badges -->
+    <div class="flex flex-col sm:flex-row gap-3 mt-4">
+      <div class="relative max-w-xs w-full">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[18px]">search</span>
+        <input type="text" [value]="searchQuery" (input)="onSearch($any($event.target).value)"
+               placeholder="Tìm theo tên hoặc mô tả..."
+               class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-bambi-orange outline-none text-sm">
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button *ngFor="let f of [
+          {v:'ALL', l:'Tất cả', count: countByStatus.all},
+          {v:'active', l:'Hiển thị', count: countByStatus.active},
+          {v:'hidden', l:'Đã ẩn', count: countByStatus.hidden}
+        ]" (click)="onStatusFilter(f.v)"
+                [class.bg-bambi-orange]="statusFilter === f.v" [class.text-white]="statusFilter === f.v"
+                [class.bg-gray-100]="statusFilter !== f.v" [class.text-gray-600]="statusFilter !== f.v"
+                class="px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5">
+          {{ f.l }}
+          <span class="text-[10px] font-black opacity-80">{{ f.count }}</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="loading()" class="flex justify-center py-20">
     <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
   </div>
 
-  <div *ngIf="!loading()" class="overflow-x-auto">
+  <!-- Empty state -->
+  <div *ngIf="!loading() && filtered().length === 0" class="flex flex-col items-center py-20 text-gray-400">
+    <span class="material-symbols-outlined text-5xl mb-2">{{ searchQuery ? 'search_off' : 'library_books' }}</span>
+    <p class="font-bold">{{ searchQuery ? 'Không tìm thấy khóa học nào' : 'Chưa có khóa học' }}</p>
+  </div>
+
+  <div *ngIf="!loading() && filtered().length > 0" class="overflow-x-auto">
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
@@ -23,17 +59,19 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
-        <tr *ngFor="let course of courses()" class="hover:bg-orange-50/30 transition-colors">
+        <tr *ngFor="let course of filtered()" class="hover:bg-orange-50/30 transition-colors">
           <td class="p-4">
             <img [src]="course.imageUrl" alt="Course" class="w-16 h-16 rounded-xl object-cover border border-gray-200">
           </td>
           <td class="p-4">
             <div class="font-bold text-gray-800 text-lg">{{ course.title }}</div>
-            <div class="text-sm text-gray-500 line-clamp-1 w-64" [title]="course.shortDescription">{{ course.shortDescription }}</div>
+            <div class="text-sm text-gray-500 line-clamp-1 w-64" [title]="course.shortDescription">
+              {{ course.shortDescription }}
+            </div>
           </td>
           <td class="p-4 font-black text-bambi-orange">{{ formatPrice(course.price) }}</td>
           <td class="p-4 text-center">
-            <button (click)="toggleStatus(course)" 
+            <button (click)="toggleStatus(course)"
                     [class.bg-green-100]="course.status === 'active'" [class.text-green-700]="course.status === 'active'"
                     [class.bg-gray-100]="course.status !== 'active'" [class.text-gray-600]="course.status !== 'active'"
                     class="px-3 py-1 rounded-full text-xs font-bold transition-colors">
@@ -44,57 +82,60 @@
             <button (click)="openModal(course)" class="text-blue-500 hover:text-blue-700 mx-2 transition-colors">
               <span class="material-symbols-outlined text-[20px]">edit</span>
             </button>
-            <button (click)="deleteCourse(course._id)" class="text-red-500 hover:text-red-700 transition-colors">
+            <button (click)="deleteCourse(course._id, course.title)" class="text-red-500 hover:text-red-700 transition-colors">
               <span class="material-symbols-outlined text-[20px]">delete</span>
             </button>
           </td>
         </tr>
       </tbody>
     </table>
+    <div class="p-4 border-t border-gray-100 text-xs text-gray-400 text-right">
+      Hiển thị {{ filtered().length }} / {{ courses().length }} khóa học
+    </div>
   </div>
 </div>
 
 <!-- Modal Thêm/Sửa -->
-<div *ngIf="isModalOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+<div *ngIf="isModalOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+     (click)="closeModal()">
+  <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+       (click)="$event.stopPropagation()">
     <div class="sticky top-0 bg-white border-b border-gray-100 p-6 flex justify-between items-center rounded-t-3xl z-10">
       <h3 class="text-2xl font-black text-gray-800">{{ editingCourse._id ? 'Sửa Khóa học' : 'Thêm Khóa học mới' }}</h3>
-      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
-    
     <div class="p-6 space-y-4">
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Tên khóa học</label>
-        <input type="text" [(ngModel)]="editingCourse.title" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none">
+        <input type="text" [(ngModel)]="editingCourse.title" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange outline-none">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Mô tả ngắn</label>
-        <textarea [(ngModel)]="editingCourse.shortDescription" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none"></textarea>
+        <textarea [(ngModel)]="editingCourse.shortDescription" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange outline-none"></textarea>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Học phí (VNĐ)</label>
-          <input type="number" [(ngModel)]="editingCourse.price" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none">
+          <input type="number" [(ngModel)]="editingCourse.price" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange outline-none">
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Link Ảnh đại diện</label>
-          <input type="text" [(ngModel)]="editingCourse.imageUrl" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none">
+          <input type="text" [(ngModel)]="editingCourse.imageUrl" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange outline-none">
         </div>
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Trạng thái</label>
-        <select [(ngModel)]="editingCourse.status" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange focus:border-transparent outline-none">
+        <select [(ngModel)]="editingCourse.status" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-bambi-orange outline-none">
           <option value="active">Hiển thị</option>
           <option value="hidden">Ẩn</option>
         </select>
       </div>
     </div>
-    
     <div class="sticky bottom-0 bg-gray-50 border-t border-gray-100 p-6 flex justify-end gap-3 rounded-b-3xl">
-      <button (click)="closeModal()" class="px-6 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-200 transition-colors">Hủy</button>
-      <button (click)="saveCourse()" class="px-6 py-2.5 rounded-xl font-bold bg-bambi-orange text-white hover:bg-orange-600 shadow-md transition-colors">Lưu lại</button>
+      <button (click)="closeModal()" class="px-6 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-200">Hủy</button>
+      <button (click)="saveCourse()" class="px-6 py-2.5 rounded-xl font-bold bg-bambi-orange text-white hover:bg-orange-600">Lưu lại</button>
     </div>
   </div>
 </div>

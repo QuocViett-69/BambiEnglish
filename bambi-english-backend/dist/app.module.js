@@ -15,6 +15,8 @@ const registrations_module_1 = require("./registrations/registrations.module");
 const seed_service_1 = require("./seed/seed.service");
 const course_schema_1 = require("./courses/course.schema");
 const branch_schema_1 = require("./branches/branch.schema");
+const registration_schema_1 = require("./registrations/registration.schema");
+const trial_schema_1 = require("./trials/trial.schema");
 const settings_module_1 = require("./settings/settings.module");
 const trials_module_1 = require("./trials/trials.module");
 const branches_module_1 = require("./branches/branches.module");
@@ -28,6 +30,8 @@ exports.AppModule = AppModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: course_schema_1.Course.name, schema: course_schema_1.CourseSchema },
                 { name: branch_schema_1.Branch.name, schema: branch_schema_1.BranchSchema },
+                { name: registration_schema_1.Registration.name, schema: registration_schema_1.RegistrationSchema },
+                { name: trial_schema_1.Trial.name, schema: trial_schema_1.TrialSchema },
             ]),
             axios_1.HttpModule,
             courses_module_1.CoursesModule,

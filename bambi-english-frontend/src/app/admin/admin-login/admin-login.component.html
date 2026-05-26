@@ -1,0 +1,67 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+  <!-- Background decorations -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-bambi-orange/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="w-full max-w-md relative">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-3 backdrop-blur-sm">
+        <span class="material-symbols-outlined text-bambi-yellow text-[32px]">pets</span>
+        <div class="text-left">
+          <div class="text-2xl font-black text-white tracking-wide">Bambi <span class="text-bambi-yellow">English</span></div>
+          <div class="text-xs text-gray-400 font-medium">Admin Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+      <h1 class="text-2xl font-black text-white mb-2">Đăng nhập</h1>
+      <p class="text-gray-400 text-sm mb-8">Nhập thông tin để truy cập trang quản trị</p>
+
+      <!-- Error message -->
+      <div *ngIf="error()" class="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-5 font-medium">
+        <span class="material-symbols-outlined text-[18px]">error</span>
+        {{ error() }}
+      </div>
+
+      <!-- Username -->
+      <div class="mb-4">
+        <label class="block text-sm font-bold text-gray-300 mb-2">Tên đăng nhập</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500 text-[20px]">person</span>
+          <input type="text" [(ngModel)]="username" (keydown)="onKeydown($event)"
+                 placeholder="admin"
+                 class="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-bambi-orange focus:ring-1 focus:ring-bambi-orange transition-colors text-sm">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-6">
+        <label class="block text-sm font-bold text-gray-300 mb-2">Mật khẩu</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500 text-[20px]">lock</span>
+          <input type="password" [(ngModel)]="password" (keydown)="onKeydown($event)"
+                 placeholder="••••••••"
+                 class="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-bambi-orange focus:ring-1 focus:ring-bambi-orange transition-colors text-sm">
+        </div>
+      </div>
+
+      <!-- Login button -->
+      <button (click)="login()" [disabled]="loading()"
+              class="w-full py-3.5 bg-bambi-orange text-white font-black rounded-xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+        <span *ngIf="loading()" class="material-symbols-outlined animate-spin text-[20px]">autorenew</span>
+        <span>{{ loading() ? 'Đang đăng nhập...' : 'Đăng nhập' }}</span>
+      </button>
+
+      <p class="text-center text-gray-600 text-xs mt-6">
+        <a routerLink="/" class="hover:text-gray-400 transition-colors flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">arrow_back</span> Quay về trang chủ
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

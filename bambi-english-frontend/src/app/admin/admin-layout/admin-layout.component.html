@@ -1,22 +1,84 @@
 <div class="min-h-screen bg-gray-50 flex">
-  <!-- Sidebar -->
-  <aside class="bg-gray-900 text-white w-64 flex-shrink-0 transition-all duration-300" [class.-ml-64]="!isSidebarOpen">
-    <div class="h-16 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800">
+
+  <!-- ══ Toast Notifications ══ -->
+  <div class="fixed top-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none">
+    <div *ngFor="let t of toast.toasts()"
+         class="pointer-events-auto flex items-start gap-3 min-w-[300px] max-w-sm px-4 py-3.5 rounded-2xl shadow-xl border text-sm font-medium animate-[slideInRight_0.25s_ease-out]"
+         [class.bg-white]="true"
+         [class.border-green-200]="t.type === 'success'"
+         [class.border-red-200]="t.type === 'error'"
+         [class.border-yellow-200]="t.type === 'warning'"
+         [class.border-blue-200]="t.type === 'info'">
+      <span class="material-symbols-outlined text-[22px] shrink-0 mt-0.5"
+            [class.text-green-500]="t.type === 'success'"
+            [class.text-red-500]="t.type === 'error'"
+            [class.text-yellow-500]="t.type === 'warning'"
+            [class.text-blue-500]="t.type === 'info'">
+        {{ t.type === 'success' ? 'check_circle' : t.type === 'error' ? 'cancel' : t.type === 'warning' ? 'warning' : 'info' }}
+      </span>
+      <span class="flex-1 text-gray-700 leading-snug">{{ t.message }}</span>
+      <button (click)="toast.remove(t.id)" class="text-gray-400 hover:text-gray-600 shrink-0">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ Custom Confirm Modal ══ -->
+  <div *ngIf="confirm.isOpen()"
+       class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden animate-[scaleIn_0.2s_ease-out]">
+      <div class="p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+               [class.bg-red-100]="confirm.options().danger"
+               [class.bg-blue-100]="!confirm.options().danger">
+            <span class="material-symbols-outlined text-[22px]"
+                  [class.text-red-500]="confirm.options().danger"
+                  [class.text-blue-500]="!confirm.options().danger">
+              {{ confirm.options().danger ? 'warning' : 'help' }}
+            </span>
+          </div>
+          <div>
+            <h3 class="font-black text-gray-800 text-lg">{{ confirm.options().title }}</h3>
+            <p class="text-gray-500 text-sm mt-1 leading-relaxed">{{ confirm.options().message }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="px-6 pb-6 flex justify-end gap-3">
+        <button (click)="confirm.cancel()"
+                class="px-5 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors text-sm">
+          {{ confirm.options().cancelText }}
+        </button>
+        <button (click)="confirm.confirm()"
+                class="px-5 py-2.5 rounded-xl font-bold text-white transition-colors text-sm"
+                [class.bg-red-500]="confirm.options().danger"
+                [class.hover:bg-red-600]="confirm.options().danger"
+                [class.bg-blue-500]="!confirm.options().danger"
+                [class.hover:bg-blue-600]="!confirm.options().danger">
+          {{ confirm.options().confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Sidebar ══ -->
+  <aside class="bg-gray-900 text-white w-64 flex-shrink-0 transition-all duration-300 flex flex-col"
+         [class.-ml-64]="!isSidebarOpen">
+    <div class="h-16 flex items-center px-4 bg-gray-900 border-b border-gray-800 shrink-0">
       <a routerLink="/admin" class="text-xl font-black font-display text-white tracking-wider flex items-center gap-2">
-        <span class="material-symbols-outlined text-bambi-yellow">pets</span> <span class="text-bambi-yellow">Bambi</span> Admin
+        <span class="material-symbols-outlined text-bambi-yellow">pets</span>
+        <span class="text-bambi-yellow">Bambi</span> Admin
       </a>
     </div>
 
-    <nav class="p-4 space-y-1">
+    <nav class="p-4 space-y-1 flex-1 overflow-y-auto">
       <!-- Dashboard -->
       <a routerLink="/admin" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange"
          class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
         <span class="material-symbols-outlined">dashboard</span> Tổng quan
       </a>
 
-      <div class="pt-2 pb-1">
-        <p class="text-xs text-gray-600 uppercase font-bold tracking-widest px-4">Quản lý nội dung</p>
-      </div>
+      <p class="text-xs text-gray-600 uppercase font-bold tracking-widest px-4 pt-4 pb-1">Nội dung</p>
 
       <a routerLink="/admin/courses" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange"
          class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
@@ -27,20 +89,25 @@
         <span class="material-symbols-outlined">location_on</span> Cơ sở
       </a>
 
-      <div class="pt-2 pb-1">
-        <p class="text-xs text-gray-600 uppercase font-bold tracking-widest px-4">Đăng ký & Học viên</p>
-      </div>
+      <p class="text-xs text-gray-600 uppercase font-bold tracking-widest px-4 pt-4 pb-1">Đăng ký</p>
 
       <a routerLink="/admin/registrations" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange"
          class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
         <span class="material-symbols-outlined">receipt_long</span> Đơn đăng ký
       </a>
+
+      <!-- Học thử with badge -->
       <a routerLink="/admin/trials" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange"
          class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
-        <span class="material-symbols-outlined">assignment</span> Học thử
+        <span class="material-symbols-outlined">assignment</span>
+        <span class="flex-1">Học thử</span>
+        <span *ngIf="newTrialsCount() > 0"
+              class="bg-red-500 text-white text-[10px] font-black min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center animate-pulse">
+          {{ newTrialsCount() > 99 ? '99+' : newTrialsCount() }}
+        </span>
       </a>
-      
-      <div class="pt-4 mt-4 border-t border-gray-800 space-y-1">
+
+      <div class="pt-4 mt-2 border-t border-gray-800 space-y-1">
         <a routerLink="/admin/settings" routerLinkActive="bg-gray-800 text-bambi-orange border-l-4 border-bambi-orange"
            class="block px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 font-medium">
           <span class="material-symbols-outlined">settings</span> Cài đặt
@@ -48,34 +115,53 @@
         <a routerLink="/" class="block px-4 py-3 rounded-lg text-gray-400 hover:text-white transition-colors flex items-center gap-3 font-medium">
           <span class="material-symbols-outlined">language</span> Xem Website
         </a>
-        <button class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-red-400 transition-colors flex items-center gap-3 font-medium mt-2">
+        <button (click)="logout()" class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-red-400 transition-colors flex items-center gap-3 font-medium">
           <span class="material-symbols-outlined">logout</span> Đăng xuất
         </button>
       </div>
     </nav>
   </aside>
 
-  <!-- Main Content -->
+  <!-- ══ Main Content ══ -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-    <!-- Header -->
-    <header class="h-16 bg-white shadow-sm flex items-center px-4 justify-between sticky top-0 z-10 border-b border-gray-200">
-      <button (click)="toggleSidebar()" class="text-gray-500 hover:text-gray-800 focus:outline-none p-2 rounded-lg hover:bg-gray-100">
+    <header class="h-16 bg-white shadow-sm flex items-center px-6 justify-between sticky top-0 z-10 border-b border-gray-200">
+      <button (click)="toggleSidebar()" class="text-gray-500 hover:text-gray-800 p-2 rounded-lg hover:bg-gray-100">
         <span class="material-symbols-outlined">menu</span>
       </button>
 
-      <div class="flex items-center gap-4">
-        <div class="relative">
-          <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none">
-            <img src="https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff" alt="Admin" class="w-8 h-8 rounded-full border border-gray-200">
-            <span class="hidden md:inline">Admin Bambi</span>
-          </button>
-        </div>
+      <div class="flex items-center gap-3">
+        <!-- Notification bell -->
+        <button routerLink="/admin/trials" class="relative p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="material-symbols-outlined">notifications</span>
+          <span *ngIf="newTrialsCount() > 0"
+                class="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+            {{ newTrialsCount() > 9 ? '9+' : newTrialsCount() }}
+          </span>
+        </button>
+
+        <div class="w-px h-6 bg-gray-200"></div>
+
+        <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+          <img src="https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff" alt="Admin"
+               class="w-8 h-8 rounded-full border border-gray-200">
+          <span class="hidden md:inline font-bold">Admin Bambi</span>
+        </button>
       </div>
     </header>
 
-    <!-- Page Content -->
     <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
       <router-outlet></router-outlet>
     </main>
   </div>
 </div>
+
+<style>
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);   opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+</style>
