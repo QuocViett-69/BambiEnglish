@@ -1,5 +1,12 @@
 import { Document } from 'mongoose';
 export type BranchDocument = Branch & Document;
+export declare class Review {
+    author: string;
+    rating: number;
+    comment: string;
+    date: string;
+    avatar: string;
+}
 export declare class Branch {
     name: string;
     address: string;
@@ -7,6 +14,7 @@ export declare class Branch {
     openingHours: string;
     imageUrl: string;
     mapLink: string;
+    reviews: Review[];
 }
 export declare const BranchSchema: import("mongoose").Schema<Branch, import("mongoose").Model<Branch, any, any, any, any, any, Branch>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Branch, Document<unknown, {}, Branch, {
     id: string;
@@ -63,6 +71,15 @@ export declare const BranchSchema: import("mongoose").Schema<Branch, import("mon
         id: string;
     }> | undefined;
     mapLink?: import("mongoose").SchemaDefinitionProperty<string, Branch, Document<unknown, {}, Branch, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Branch & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }> | undefined;
+    reviews?: import("mongoose").SchemaDefinitionProperty<Review[], Branch, Document<unknown, {}, Branch, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Branch & {
         _id: import("mongoose").Types.ObjectId;

@@ -7,34 +7,83 @@
     </button>
   </div>
 
+  <!-- Loading -->
   <div *ngIf="loading()" class="flex justify-center py-20">
     <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
   </div>
 
-  <div *ngIf="!loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-    <div *ngFor="let branch of branches()" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 relative group hover:border-bambi-orange transition-colors">
-      <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button (click)="openModal(branch)" class="bg-blue-100 text-blue-600 p-2 rounded-lg hover:bg-blue-200">
-          <span class="material-symbols-outlined text-[16px]">edit</span>
-        </button>
-        <button (click)="deleteBranch(branch._id)" class="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200">
-          <span class="material-symbols-outlined text-[16px]">delete</span>
-        </button>
+  <!-- Empty state -->
+  <div *ngIf="!loading() && branches().length === 0" class="flex flex-col items-center justify-center py-20 text-gray-400">
+    <span class="material-symbols-outlined text-6xl mb-3">location_off</span>
+    <p class="text-lg font-bold">Chưa có cơ sở nào</p>
+    <p class="text-sm mt-1">Hãy thêm cơ sở đầu tiên của Bambi English</p>
+  </div>
+
+  <!-- Branch grid -->
+  <div *ngIf="!loading() && branches().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <div *ngFor="let branch of branches()"
+         class="bg-white rounded-2xl border border-gray-200 overflow-hidden group hover:border-bambi-orange hover:shadow-lg transition-all duration-300">
+      
+      <!-- Branch image -->
+      <div class="relative h-40 bg-gray-100 overflow-hidden">
+        <img *ngIf="branch.imageUrl" [src]="branch.imageUrl" [alt]="branch.name"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        <div *ngIf="!branch.imageUrl" class="w-full h-full flex items-center justify-center bg-orange-50">
+          <span class="material-symbols-outlined text-5xl text-bambi-orange opacity-50">store</span>
+        </div>
+
+        <!-- Action buttons overlay -->
+        <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <button (click)="openModal(branch)" class="bg-white/90 backdrop-blur-sm text-blue-600 p-2 rounded-lg hover:bg-blue-100 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+          </button>
+          <button (click)="deleteBranch(branch._id)" class="bg-white/90 backdrop-blur-sm text-red-600 p-2 rounded-lg hover:bg-red-100 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+          </button>
+        </div>
       </div>
 
-      <h3 class="font-bold text-lg text-gray-800 pr-16 mb-2">{{ branch.name }}</h3>
-      <div class="text-sm text-gray-600 space-y-2">
-        <div class="flex items-start gap-2">
-          <span class="material-symbols-outlined text-[18px]">location_on</span>
-          <span class="line-clamp-2">{{ branch.address }}</span>
+      <!-- Branch info -->
+      <div class="p-5">
+        <h3 class="font-bold text-lg text-gray-800 mb-3">{{ branch.name }}</h3>
+        <div class="text-sm text-gray-600 space-y-2 mb-4">
+          <div class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-[18px] text-bambi-orange mt-0.5">location_on</span>
+            <span class="line-clamp-2">{{ branch.address }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-bambi-orange">call</span>
+            <span>{{ branch.phone }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-bambi-orange">schedule</span>
+            <span>{{ branch.openingHours }}</span>
+          </div>
         </div>
-        <div class="flex items-start gap-2">
-          <span class="material-symbols-outlined text-[18px]">call</span>
-          <span>{{ branch.phone }}</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="material-symbols-outlined text-[18px]">schedule</span>
-          <span>{{ branch.openingHours }}</span>
+
+        <!-- Rating summary + View reviews button -->
+        <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+          <div *ngIf="branch.reviews && branch.reviews.length > 0" class="flex items-center gap-2">
+            <div class="flex items-center gap-0.5">
+              <span *ngFor="let s of getStars(getAverageRating(branch.reviews)); let i = index"
+                    class="material-symbols-outlined text-[16px]"
+                    [class.text-yellow-400]="isFullStar(i+1, getAverageRating(branch.reviews)) || isHalfStar(i+1, getAverageRating(branch.reviews))"
+                    [class.text-gray-300]="!isFullStar(i+1, getAverageRating(branch.reviews)) && !isHalfStar(i+1, getAverageRating(branch.reviews))">
+                star
+              </span>
+            </div>
+            <span class="text-sm font-bold text-gray-700">{{ getAverageRating(branch.reviews) }}</span>
+            <span class="text-xs text-gray-400">({{ branch.reviews.length }} đánh giá)</span>
+          </div>
+          <div *ngIf="!branch.reviews || branch.reviews.length === 0" class="text-xs text-gray-400 italic">
+            Chưa có đánh giá
+          </div>
+
+          <button (click)="openReviewModal(branch)"
+                  class="flex items-center gap-1.5 text-xs font-bold text-bambi-orange hover:underline">
+            <span class="material-symbols-outlined text-[15px]">reviews</span>
+            Xem đánh giá
+          </button>
         </div>
       </div>
     </div>
@@ -54,27 +103,127 @@
     <div class="p-6 space-y-4">
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Tên cơ sở</label>
-        <input type="text" [(ngModel)]="editingBranch.name" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
+        <input type="text" [(ngModel)]="editingBranch.name" placeholder="VD: Bambi English – Quận 1"
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Địa chỉ</label>
-        <input type="text" [(ngModel)]="editingBranch.address" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
+        <input type="text" [(ngModel)]="editingBranch.address"
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Số điện thoại</label>
-          <input type="text" [(ngModel)]="editingBranch.phone" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
+          <input type="text" [(ngModel)]="editingBranch.phone"
+                 class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Giờ mở cửa</label>
-          <input type="text" [(ngModel)]="editingBranch.openingHours" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
+          <input type="text" [(ngModel)]="editingBranch.openingHours"
+                 class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
         </div>
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">Link ảnh đại diện</label>
+        <input type="text" [(ngModel)]="editingBranch.imageUrl" placeholder="https://..."
+               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bambi-orange outline-none">
       </div>
     </div>
     
     <div class="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-3xl">
       <button (click)="closeModal()" class="px-5 py-2 rounded-lg font-bold text-gray-600 hover:bg-gray-200">Hủy</button>
       <button (click)="saveBranch()" class="px-5 py-2 rounded-lg font-bold bg-bambi-orange text-white hover:bg-orange-600">Lưu lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Xem Đánh giá -->
+<div *ngIf="isReviewModalOpen && reviewBranch" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
+    
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-100 flex justify-between items-start shrink-0">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">Đánh giá cơ sở</h3>
+        <p class="text-sm text-bambi-orange font-semibold mt-0.5">{{ reviewBranch.name }}</p>
+      </div>
+      <button (click)="closeReviewModal()" class="text-gray-400 hover:text-gray-600 mt-1">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Summary bar -->
+    <div *ngIf="reviewBranch.reviews && reviewBranch.reviews.length > 0"
+         class="px-6 py-4 bg-orange-50 border-b border-orange-100 shrink-0">
+      <div class="flex items-center gap-6">
+        <div class="text-center">
+          <div class="text-4xl font-black text-bambi-orange">{{ getAverageRating(reviewBranch.reviews) }}</div>
+          <div class="flex gap-0.5 justify-center mt-1">
+            <span *ngFor="let s of getStars(getAverageRating(reviewBranch.reviews)); let i = index"
+                  class="material-symbols-outlined text-[20px]"
+                  [class.text-yellow-400]="isFullStar(i+1, getAverageRating(reviewBranch.reviews)) || isHalfStar(i+1, getAverageRating(reviewBranch.reviews))"
+                  [class.text-gray-300]="!isFullStar(i+1, getAverageRating(reviewBranch.reviews)) && !isHalfStar(i+1, getAverageRating(reviewBranch.reviews))">
+              star
+            </span>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">{{ reviewBranch.reviews.length }} đánh giá</div>
+        </div>
+        <div class="flex-1 space-y-1">
+          <div *ngFor="let star of [5,4,3,2,1]" class="flex items-center gap-2 text-xs">
+            <span class="text-gray-600 w-6 text-right">{{ star }}</span>
+            <span class="material-symbols-outlined text-yellow-400 text-[14px]">star</span>
+            <div class="flex-1 bg-gray-200 rounded-full h-1.5">
+              <div class="bg-yellow-400 h-1.5 rounded-full transition-all"
+                   [style.width.%]="(reviewBranch.reviews.filter(r => r.rating === star).length / reviewBranch.reviews.length) * 100">
+              </div>
+            </div>
+            <span class="text-gray-400 w-4">{{ reviewBranch.reviews.filter(r => r.rating === star).length }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review list -->
+    <div class="overflow-y-auto flex-1 p-6 space-y-4">
+      <div *ngIf="!reviewBranch.reviews || reviewBranch.reviews.length === 0"
+           class="flex flex-col items-center justify-center py-16 text-gray-400">
+        <span class="material-symbols-outlined text-5xl mb-2">chat_bubble_outline</span>
+        <p class="font-bold">Chưa có đánh giá nào</p>
+      </div>
+
+      <div *ngFor="let review of reviewBranch.reviews"
+           class="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+        <img *ngIf="review.avatar" [src]="review.avatar" [alt]="review.author"
+             class="w-10 h-10 rounded-full object-cover shrink-0 border-2 border-white shadow-sm">
+        <div *ngIf="!review.avatar"
+             class="w-10 h-10 rounded-full bg-bambi-orange/20 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-bambi-orange text-[20px]">person</span>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <span class="font-bold text-gray-800 text-sm">{{ review.author }}</span>
+            <span class="text-xs text-gray-400">{{ review.date }}</span>
+          </div>
+          <div class="flex gap-0.5 my-1">
+            <span *ngFor="let s of getStars(review.rating); let i = index"
+                  class="material-symbols-outlined text-[14px]"
+                  [class.text-yellow-400]="i < review.rating"
+                  [class.text-gray-300]="i >= review.rating">
+              star
+            </span>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">{{ review.comment }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-4 border-t border-gray-100 shrink-0 bg-gray-50 rounded-b-3xl flex justify-end">
+      <button (click)="closeReviewModal()"
+              class="px-6 py-2 rounded-xl font-bold bg-bambi-orange text-white hover:bg-orange-600 transition-colors">
+        Đóng
+      </button>
     </div>
   </div>
 </div>

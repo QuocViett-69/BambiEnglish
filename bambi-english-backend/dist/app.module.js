@@ -14,8 +14,10 @@ const courses_module_1 = require("./courses/courses.module");
 const registrations_module_1 = require("./registrations/registrations.module");
 const seed_service_1 = require("./seed/seed.service");
 const course_schema_1 = require("./courses/course.schema");
+const branch_schema_1 = require("./branches/branch.schema");
 const settings_module_1 = require("./settings/settings.module");
 const trials_module_1 = require("./trials/trials.module");
+const branches_module_1 = require("./branches/branches.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -23,12 +25,16 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/bambi-english'),
-            mongoose_1.MongooseModule.forFeature([{ name: course_schema_1.Course.name, schema: course_schema_1.CourseSchema }]),
+            mongoose_1.MongooseModule.forFeature([
+                { name: course_schema_1.Course.name, schema: course_schema_1.CourseSchema },
+                { name: branch_schema_1.Branch.name, schema: branch_schema_1.BranchSchema },
+            ]),
             axios_1.HttpModule,
             courses_module_1.CoursesModule,
             registrations_module_1.RegistrationsModule,
             settings_module_1.SettingsModule,
             trials_module_1.TrialsModule,
+            branches_module_1.BranchesModule,
         ],
         providers: [seed_service_1.SeedService],
     })

@@ -9,8 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BranchSchema = exports.Branch = void 0;
+exports.BranchSchema = exports.Branch = exports.Review = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
+class Review {
+    author;
+    rating;
+    comment;
+    date;
+    avatar;
+}
+exports.Review = Review;
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Review.prototype, "author", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true, min: 1, max: 5 }),
+    __metadata("design:type", Number)
+], Review.prototype, "rating", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Review.prototype, "comment", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], Review.prototype, "date", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], Review.prototype, "avatar", void 0);
 let Branch = class Branch {
     name;
     address;
@@ -18,6 +46,7 @@ let Branch = class Branch {
     openingHours;
     imageUrl;
     mapLink;
+    reviews;
 };
 exports.Branch = Branch;
 __decorate([
@@ -44,6 +73,10 @@ __decorate([
     (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
 ], Branch.prototype, "mapLink", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [Object], default: [] }),
+    __metadata("design:type", Array)
+], Branch.prototype, "reviews", void 0);
 exports.Branch = Branch = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Branch);

@@ -3,6 +3,23 @@ import { Document } from 'mongoose';
 
 export type BranchDocument = Branch & Document;
 
+export class Review {
+  @Prop({ required: true })
+  author: string;
+
+  @Prop({ required: true, min: 1, max: 5 })
+  rating: number;
+
+  @Prop({ required: true })
+  comment: string;
+
+  @Prop({ required: false })
+  date: string;
+
+  @Prop({ required: false })
+  avatar: string;
+}
+
 @Schema({ timestamps: true })
 export class Branch {
   @Prop({ required: true })
@@ -22,6 +39,9 @@ export class Branch {
 
   @Prop({ required: false })
   mapLink: string;
+
+  @Prop({ type: [Object], default: [] })
+  reviews: Review[];
 }
 
 export const BranchSchema = SchemaFactory.createForClass(Branch);

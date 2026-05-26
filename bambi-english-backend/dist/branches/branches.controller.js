@@ -75,7 +75,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], BranchesController.prototype, "remove", null);
 exports.BranchesController = BranchesController = __decorate([
-    (0, common_1.Controller)('api/branches'),
+    (0, common_1.Controller)('branches'),
     __metadata("design:paramtypes", [branches_service_1.BranchesService])
 ], BranchesController);
 //# sourceMappingURL=branches.controller.js.map
