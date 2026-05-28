@@ -10,11 +10,12 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   navItems = [
-    { label: 'Trang chủ',    route: '/',               icon: 'home' },
-    { label: 'Địa điểm',     route: '/dia-diem',        icon: 'location_on' },
-    { label: 'Thông tin',    route: '/thong-tin',       icon: 'info' },
-    { label: 'CSVC',         route: '/co-so-vat-chat',  icon: 'school' },
-    { label: 'Đăng ký',      route: '/lien-he',         icon: 'assignment' },
+    { label: 'Trang chủ',    route: '/',               icon: '🏠' },
+    { label: 'Địa điểm',     route: '/dia-diem',       icon: '📍' },
+    { label: 'Thông tin',    route: '/thong-tin',      icon: 'ℹ️' },
+    { label: 'CSVC',         route: '/co-so-vat-chat', icon: '🏫' },
+    { label: 'Giáo viên',    route: '/giao-vien',      icon: '👩‍🏫' },
+    { label: 'Tuyển dụng',   route: '/tuyen-dung',     icon: '💼' },
   ];
 
   mobileMenuOpen = false;

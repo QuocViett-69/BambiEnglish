@@ -1,133 +1,31 @@
-<div class="bg-gray-50 min-h-screen pb-20">
-  <div *ngIf="loading()" class="flex justify-center items-center h-64">
-    <div class="w-16 h-16 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
+<div class="max-w-4xl mx-auto px-4 py-16">
+  <div *ngIf="loading()" class="flex justify-center py-20">
+    <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
   </div>
 
-  <ng-container *ngIf="course() && !loading()">
-    <!-- Hero Header -->
-    <div class="bg-gradient-to-r from-bambi-orange to-yellow-500 text-white py-16 px-4 relative overflow-hidden">
-      <div class="absolute inset-0 bg-black/10"></div>
-      <div class="max-w-7xl mx-auto relative z-10">
-        <a routerLink="/khoa-hoc" class="inline-flex items-center text-white/90 hover:text-white mb-6 font-medium transition-colors">
-          <span class="material-symbols-outlined mr-2">arrow_back</span>
-          Quay lại danh sách
-        </a>
-        <h1 class="text-4xl md:text-5xl font-black font-display mb-4">{{ course()!.title }}</h1>
-        <p class="text-xl md:text-2xl text-white/90 max-w-3xl">{{ course()!.shortDescription }}</p>
-        
-        <div class="flex flex-wrap gap-4 mt-8">
-          <div class="bg-white/20 backdrop-blur rounded-xl px-5 py-3">
-            <div class="text-sm uppercase tracking-wider text-white/80 font-bold mb-1">Độ tuổi</div>
-            <div class="font-black text-xl">{{ course()!.title.includes('Mẫu giáo') ? '4-6 Tuổi' : '6-11 Tuổi' }}</div>
-          </div>
-          <div class="bg-white/20 backdrop-blur rounded-xl px-5 py-3">
-            <div class="text-sm uppercase tracking-wider text-white/80 font-bold mb-1">Thời lượng</div>
-            <div class="font-black text-xl">2 buổi/tuần, 90 phút/buổi</div>
-          </div>
+  <div *ngIf="course() && !loading()" class="glass-card overflow-hidden">
+    <img [src]="course()!.imageUrl" [alt]="course()!.title" class="w-full h-80 object-cover" />
+    <div class="p-8 md:p-12 relative">
+      <!-- Back button -->
+      <a routerLink="/" class="absolute top-6 left-6 flex items-center justify-center w-10 h-10 bg-white/80 backdrop-blur rounded-full text-bambi-orange hover:bg-bambi-orange hover:text-white transition-all shadow">
+        ←
+      </a>
+      
+      <h1 class="text-4xl font-black font-display mt-4 mb-4 text-bambi-green">{{ course()!.title }}</h1>
+      <p class="text-gray-600 mb-8 text-lg leading-relaxed">{{ course()!.shortDescription }}</p>
+
+      <div class="bg-bambi-green/10 border border-bambi-green/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-gray-600 font-bold block mb-1">Học phí lộ trình</span>
+          <span class="text-sm text-gray-500">Thanh toán linh hoạt theo tháng hoặc khóa học</span>
         </div>
+        <span class="text-bambi-orange text-3xl font-black">{{ formatPrice(course()!.price) }}</span>
       </div>
+
+      <a [routerLink]="['/dang-ky', course()!._id]"
+         class="block w-full text-center bg-bambi-orange text-white font-bold py-4 rounded-full text-lg hover:shadow-[0_6px_20px_rgba(255,107,53,0.3)] hover:-translate-y-1 transition-all">
+        🎉 Đăng ký học trải nghiệm
+      </a>
     </div>
-
-    <!-- Main Content Grid -->
-    <div class="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Left Column: Details -->
-        <div class="lg:col-span-2 space-y-8">
-          <!-- Image -->
-          <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
-            <img [src]="course()!.imageUrl" [alt]="course()!.title" class="w-full h-80 object-cover" />
-          </div>
-
-          <!-- Output Goal & Content -->
-          <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-            <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center">
-              <span class="material-symbols-outlined text-3xl mr-3 text-bambi-orange align-middle">track_changes</span> Mục tiêu & Nội dung khóa học
-            </h2>
-            <div class="space-y-4 text-gray-600 leading-relaxed">
-              <p>Khóa học {{ course()!.title }} được thiết kế nhằm giúp các bé xây dựng nền tảng tiếng Anh vững chắc, phát triển toàn diện 4 kỹ năng: Nghe - Nói - Đọc - Viết. Chúng tôi tập trung vào việc khơi dậy niềm đam mê ngôn ngữ thông qua các hoạt động tương tác, trò chơi và bài hát.</p>
-              
-              <h3 class="font-bold text-gray-800 mt-6 mb-3 text-lg">Mục tiêu đầu ra:</h3>
-              <ul class="list-disc pl-6 space-y-2">
-                <li>Phát âm chuẩn xác như người bản xứ.</li>
-                <li>Tự tin giao tiếp trong các tình huống hàng ngày.</li>
-                <li>Mở rộng vốn từ vựng theo các chủ đề gần gũi.</li>
-                <li>Nắm vững ngữ pháp cơ bản phù hợp với lứa tuổi.</li>
-              </ul>
-              
-              <h3 class="font-bold text-gray-800 mt-6 mb-3 text-lg">Đội ngũ giáo viên:</h3>
-              <div class="flex items-start gap-4 p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Teacher" class="w-16 h-16 rounded-full object-cover border-2 border-bambi-orange" />
-                <div>
-                  <h4 class="font-bold text-gray-800">Thầy David Smith & Cô Ngọc Mai</h4>
-                  <p class="text-sm text-gray-600 mt-1">100% giáo viên có bằng giảng dạy quốc tế TESOL/CELTA, giàu kinh nghiệm làm việc với trẻ em và luôn tận tâm theo sát tiến độ của từng học viên.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column: Form & Info -->
-        <div class="space-y-8">
-          <!-- Fee Card -->
-          <div class="bg-white rounded-3xl p-8 shadow-sm border border-bambi-orange relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-bambi-yellow opacity-10 rounded-bl-full -z-0"></div>
-            <div class="relative z-10">
-              <div class="text-gray-500 font-medium mb-2 uppercase tracking-wide">Học phí khóa học</div>
-              <div class="text-4xl font-black text-bambi-orange mb-6">{{ formatPrice(course()!.price) }}</div>
-              
-              <div class="space-y-4 mb-8">
-                <div class="flex justify-between border-b border-gray-100 pb-2">
-                  <span class="text-gray-600">Lịch khai giảng:</span>
-                  <span class="font-bold text-gray-800">Mỗi đầu tháng</span>
-                </div>
-                <div class="flex justify-between border-b border-gray-100 pb-2">
-                  <span class="text-gray-600">Sĩ số lớp:</span>
-                  <span class="font-bold text-gray-800">Tối đa 12 bé</span>
-                </div>
-              </div>
-
-              <a [routerLink]="['/dang-ky', course()!._id]" class="block w-full text-center bg-bambi-green text-white font-black py-4 px-6 rounded-2xl text-lg hover:bg-green-600 hover:shadow-lg hover:-translate-y-1 transition-all">
-                Đăng ký chính thức
-              </a>
-            </div>
-          </div>
-
-          <!-- Trial Registration Form -->
-          <div class="bg-gradient-to-b from-orange-50 to-white rounded-3xl p-8 shadow-sm border border-orange-100">
-            <h3 class="text-2xl font-black text-gray-800 mb-2 flex items-center"><span class="material-symbols-outlined text-bambi-orange text-[28px] mr-2">card_giftcard</span> Học thử miễn phí!</h3>
-            <p class="text-gray-600 mb-6 text-sm">Để lại thông tin, chuyên viên tư vấn sẽ liên hệ xếp lớp học thử cho bé trong vòng 24h.</p>
-            
-            <div *ngIf="submitSuccess()" class="bg-green-100 text-green-800 p-4 rounded-xl mb-6 font-medium text-center border border-green-200">
-              <span class="material-symbols-outlined align-middle mr-1">celebration</span> Đăng ký thành công! Chúng tôi sẽ gọi cho bạn sớm nhất.
-            </div>
-
-            <form *ngIf="!submitSuccess()" [formGroup]="trialForm" (ngSubmit)="submitTrial()" class="space-y-4">
-              <div>
-                <input type="text" formControlName="parentName" placeholder="Tên phụ huynh *" 
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all"
-                       [class.border-red-500]="trialForm.get('parentName')?.invalid && trialForm.get('parentName')?.touched">
-              </div>
-              <div>
-                <input type="tel" formControlName="phone" placeholder="Số điện thoại *" 
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all"
-                       [class.border-red-500]="trialForm.get('phone')?.invalid && trialForm.get('phone')?.touched">
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <input type="text" formControlName="studentName" placeholder="Tên bé" 
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all">
-                <input type="number" formControlName="studentAge" placeholder="Tuổi của bé" 
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all">
-              </div>
-              <button type="submit" [disabled]="trialForm.invalid"
-                      class="w-full bg-bambi-orange disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl hover:bg-orange-600 transition-colors shadow-md mt-4">
-                Nhận tư vấn & Học thử
-              </button>
-            </form>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </ng-container>
+  </div>
 </div>

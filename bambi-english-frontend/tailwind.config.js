@@ -9,8 +9,7 @@ module.exports = {
         bambi: {
           green:  '#4CAF50',
           orange: '#FF6B35',
-          yellow: '#FFD700',
-          light:  '#FFF8F0',
+          light:  '#F9FAFB',
         },
         momo: '#ae2070',
       },

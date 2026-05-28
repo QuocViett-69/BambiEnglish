@@ -1,77 +1,71 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { BranchService } from '../../services/branch.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
+interface Branch {
+  name: string;
+  address: string;
+  phone: string;
+  image: string;
+  mapUrl?: SafeResourceUrl;
+  licenses: string[];
+}
 
 @Component({
   selector: 'app-location',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './location.component.html',
 })
-export class LocationComponent implements OnInit {
-  branches = signal<any[]>([]);
-  filtered = signal<any[]>([]);
-  loading = signal(true);
-  searchQuery = '';
+export class LocationComponent {
+  branches: Branch[] = [];
+  activeBranch: Branch | null = null;
+  activeTab: 'map' | 'licenses' = 'map';
 
-  isReviewModalOpen = false;
-  reviewBranch: any = null;
-
-  constructor(private branchService: BranchService) {}
-
-  ngOnInit() {
-    this.branchService.getAll().subscribe({
-      next: (data) => {
-        this.branches.set(data);
-        this.filtered.set(data);
-        this.loading.set(false);
+  constructor(private sanitizer: DomSanitizer) {
+    const rawBranches = [
+      { 
+        name: 'Cơ sở 1 (P. Thông Tây Hội)', 
+        address: '641/44 Quang Trung, Phường Thông Tây Hội, Q.Gò Vấp, TP.HCM', 
+        phone: '0948 064 000', 
+        image: '/image/thongtayhoi.jpg',
+        licenses: ['/image/licenses/cs1_1.jpg', '/image/licenses/cs1_2.jpg']
       },
-      error: () => this.loading.set(false),
-    });
+      { 
+        name: 'Cơ sở 2 (P. Thạnh Mỹ Tây)', 
+        address: '340/38 Ung Văn Khiêm, Phường Thạnh Mỹ Tây, Q.Bình Thạnh, TP.HCM', 
+        phone: '0778 800 030', 
+        image: '/image/thanhmytay.jpg',
+        licenses: ['/image/licenses/cs2_1.jpg', '/image/licenses/cs2_2.jpg']
+      },
+      { 
+        name: 'Cơ sở 3 (P. An Hội Đông)', 
+        address: '304 Nguyễn Văn Lượng, Phường An Hội Đông, Q.Gò Vấp, TP.HCM', 
+        phone: '0789 990 080', 
+        image: '/image/anhoidong.jpg',
+        licenses: ['/image/licenses/cs3_1.jpg', '/image/licenses/cs3_2.jpg']
+      },
+      { 
+        name: 'Cơ sở 4 (P. Hiệp Bình)', 
+        address: '11 đường số 4, phường Hiệp Bình, TP Thủ Đức, TP.HCM', 
+        phone: '0777 000 840', 
+        image: '/image/hiepbinh.jpg',
+        licenses: ['/image/licenses/cs4_1.jpg', '/image/licenses/cs4_2.jpg']
+      },
+    ];
+
+    this.branches = rawBranches.map(b => ({
+      ...b,
+      mapUrl: this.sanitizer.bypassSecurityTrustResourceUrl(`https://maps.google.com/maps?q=${encodeURIComponent(b.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`)
+    }));
   }
 
-  onSearch(query: string) {
-    this.searchQuery = query;
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      this.filtered.set(this.branches());
-    } else {
-      this.filtered.set(
-        this.branches().filter(
-          (b) =>
-            b.name?.toLowerCase().includes(q) ||
-            b.address?.toLowerCase().includes(q)
-        )
-      );
-    }
+  showMap(branch: Branch) {
+    this.activeBranch = branch;
+    this.activeTab = 'map';
   }
-
-  openReviewModal(branch: any) {
-    this.reviewBranch = branch;
-    this.isReviewModalOpen = true;
-  }
-
-  closeReviewModal() {
-    this.isReviewModalOpen = false;
-    this.reviewBranch = null;
-  }
-
-  getAverageRating(reviews: any[]): number {
-    if (!reviews || reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-    return Math.round((sum / reviews.length) * 10) / 10;
-  }
-
-  getStars(): number[] {
-    return [1, 2, 3, 4, 5];
-  }
-
-  isFullStar(index: number, rating: number): boolean {
-    return index <= Math.floor(rating);
-  }
-
-  isHalfStar(index: number, rating: number): boolean {
-    return index === Math.ceil(rating) && rating % 1 >= 0.5;
+  
+  closeMap() {
+    this.activeBranch = null;
   }
 }

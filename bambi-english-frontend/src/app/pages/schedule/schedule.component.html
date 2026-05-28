@@ -1,20 +1,57 @@
-<div class="max-w-4xl mx-auto px-4 py-12">
-  <h1 class="text-3xl font-black font-display text-gray-800 mb-6 text-center flex items-center justify-center"><span class="material-symbols-outlined align-middle mr-2 text-[32px] text-bambi-orange">calendar_month</span> Lịch học của bạn</h1>
-  <div class="bg-white rounded-2xl shadow-lg p-8">
-    <p class="text-gray-500 mb-6 text-center">Dưới đây là lịch học dự kiến của học viên tại Bambi English.</p>
-    
-    <div class="grid md:grid-cols-2 gap-6">
-      <div *ngFor="let s of schedule" class="bg-bambi-light p-6 rounded-xl border border-orange-100 flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-1">
-         <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl mb-4 shadow-sm text-bambi-orange"><span class="material-symbols-outlined">schedule</span></div>
-         <h3 class="font-bold text-gray-800 text-lg mb-1">{{s.day}}</h3>
-         <p class="text-bambi-orange font-black text-xl mb-2">{{s.time}}</p>
-         <p class="text-gray-500 text-sm flex items-center justify-center"><span class="material-symbols-outlined text-[16px] align-middle mr-1">location_on</span> {{s.room}}</p>
+<div class="max-w-4xl mx-auto px-4 py-16">
+  <h1 class="text-4xl font-black font-display text-bambi-green text-center mb-4">📅 Học Phí & Lịch Học</h1>
+  <p class="text-center text-gray-600 mb-12">Linh hoạt theo nhu cầu của phụ huynh và năng lực của bé</p>
+
+  <div class="glass-card p-8 md:p-12">
+    <div class="grid md:grid-cols-2 gap-10">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-bambi-orange/20 flex items-center justify-center text-bambi-orange text-xl">🕒</div>
+          <h2 class="text-2xl font-bold text-gray-800">Lịch Học Linh Hoạt</h2>
+        </div>
+        <ul class="space-y-4 text-gray-700">
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-green mt-1">✓</span>
+            Mở cửa từ <strong>Thứ 2 đến Chủ nhật</strong>.
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-green mt-1">✓</span>
+            Mỗi ca học kéo dài <strong>1 tiếng 45 phút</strong>.
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-green mt-1">✓</span>
+            Phụ huynh có thể chọn từ <strong>1 đến 6 buổi/tuần</strong> tùy theo thời gian rảnh.
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-bambi-green/20 flex items-center justify-center text-bambi-green text-xl">💳</div>
+          <h2 class="text-2xl font-bold text-gray-800">Học Phí</h2>
+        </div>
+        <ul class="space-y-4 text-gray-700">
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-orange mt-1">✓</span>
+            Tính dựa trên <strong>số buổi đăng ký</strong> trong tuần.
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-orange mt-1">✓</span>
+            Đóng theo tháng, tính từ ngày đầu tiên đi học.
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-bambi-orange mt-1">✓</span>
+            Hỗ trợ <strong>học bù</strong> nếu báo vắng trước.
+          </li>
+        </ul>
       </div>
     </div>
-    
-    <div class="mt-10 text-center flex flex-col sm:flex-row justify-center gap-4">
-      <a routerLink="/" class="inline-block bg-gray-100 text-gray-600 font-bold px-6 py-3 rounded-full hover:bg-gray-200 transition-colors w-full sm:w-auto">
-        Quay lại trang chủ
+
+    <div class="mt-12 bg-bambi-green/10 rounded-2xl p-6 text-center border border-bambi-green/30">
+      <h3 class="text-xl font-bold text-bambi-green mb-3">Chương trình trải nghiệm miễn phí!</h3>
+      <p class="text-gray-700 mb-6">Bambi English đang có chương trình học thử và kiểm tra năng lực hoàn toàn miễn phí cho bé.</p>
+      <a href="tel:0967121270" class="inline-block bg-bambi-orange text-white font-bold px-8 py-3 rounded-full hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+        Đăng ký Test Năng Lực Ngay
       </a>
     </div>
   </div>

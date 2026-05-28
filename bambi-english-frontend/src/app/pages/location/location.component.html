@@ -1,206 +1,103 @@
-<!-- Hero Header -->
-<div class="bg-gradient-to-r from-bambi-orange to-yellow-500 py-16 px-4 relative overflow-hidden">
-  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-  <div class="max-w-7xl mx-auto text-center relative z-10">
-    <h1 class="text-5xl font-black font-display text-white mb-4 drop-shadow-md">Hệ thống cơ sở</h1>
-    <p class="text-xl text-white/90 max-w-2xl mx-auto">
-      Bambi English hiện có {{ branches().length }} cơ sở trải dài khắp TP.HCM, mang đến sự tiện lợi tối đa cho phụ huynh đưa đón bé.
-    </p>
-  </div>
-</div>
-
-<div class="bg-gray-50 py-12 px-4 min-h-screen">
-  <div class="max-w-7xl mx-auto">
-
-    <!-- Search bar -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm mb-10 border border-gray-100 flex justify-center">
-      <div class="w-full max-w-md relative">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <span class="material-symbols-outlined text-gray-400">search</span>
-        </div>
-        <input
-          type="text"
-          [value]="searchQuery"
-          (input)="onSearch($any($event.target).value)"
-          placeholder="Tìm theo tên hoặc địa chỉ cơ sở..."
-          class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bambi-orange focus:border-transparent transition-all"
-        >
-      </div>
+<div class="bg-gray-50 min-h-screen py-16 relative">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-black font-display text-bambi-green mb-4">Hệ Thống Chi Nhánh</h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Bambi English hiện có 4 cơ sở tại TP.HCM, trang bị đầy đủ tiện nghi, luôn sẵn sàng chào đón các bé! Bấm vào chi nhánh để xem bản đồ chi tiết và giấy phép hoạt động.
+      </p>
     </div>
-
-    <!-- Loading -->
-    <div *ngIf="loading()" class="flex justify-center py-24">
-      <div class="w-12 h-12 border-4 border-bambi-orange border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
-    <!-- Empty state -->
-    <div *ngIf="!loading() && filtered().length === 0" class="flex flex-col items-center justify-center py-24 text-gray-400">
-      <span class="material-symbols-outlined text-6xl mb-3">location_off</span>
-      <p class="text-xl font-bold">Không tìm thấy cơ sở</p>
-      <p class="text-sm mt-1">Thử tìm kiếm với từ khóa khác</p>
-    </div>
-
-    <!-- Branches Grid -->
-    <div *ngIf="!loading() && filtered().length > 0"
-         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let branch of filtered()"
-           class="bg-white rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 group overflow-hidden flex flex-col">
-
-        <!-- Branch image -->
-        <div class="relative h-44 bg-gray-100 overflow-hidden">
-          <img *ngIf="branch.imageUrl" [src]="branch.imageUrl" [alt]="branch.name"
-               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-          <div *ngIf="!branch.imageUrl"
-               class="w-full h-full flex items-center justify-center bg-orange-50">
-            <span class="material-symbols-outlined text-5xl text-bambi-orange opacity-40">store</span>
-          </div>
-          <!-- Rating badge -->
-          <div *ngIf="branch.reviews && branch.reviews.length > 0"
-               class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-            <span class="material-symbols-outlined text-yellow-400 text-[15px]">star</span>
-            <span class="text-xs font-black text-gray-800">{{ getAverageRating(branch.reviews) }}</span>
-            <span class="text-xs text-gray-500">({{ branch.reviews.length }})</span>
-          </div>
-        </div>
-
-        <!-- Info -->
-        <div class="p-6 flex flex-col flex-1">
-          <h3 class="font-black text-xl text-gray-800 mb-4 group-hover:text-bambi-orange transition-colors">
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div *ngFor="let branch of branches" 
+           (click)="showMap(branch)"
+           class="bg-white rounded-3xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group">
+        
+        <!-- Branch Image -->
+        <div class="relative h-48 w-full overflow-hidden">
+          <img [src]="branch.image" [alt]="branch.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md">
             {{ branch.name }}
-          </h3>
-
-          <div class="space-y-3 flex-1 text-sm text-gray-600">
-            <div class="flex items-start gap-2.5">
-              <span class="material-symbols-outlined text-[18px] text-bambi-orange mt-0.5 shrink-0">location_on</span>
-              <span class="leading-relaxed">{{ branch.address }}</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-[18px] text-bambi-orange shrink-0">call</span>
-              <span class="font-bold">{{ branch.phone }}</span>
-            </div>
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-[18px] text-bambi-orange shrink-0">schedule</span>
-              <span>{{ branch.openingHours || 'Thứ 2 – CN: 08:00 – 21:00' }}</span>
-            </div>
           </div>
+        </div>
 
-          <!-- Stars preview -->
-          <div *ngIf="branch.reviews && branch.reviews.length > 0" class="flex items-center gap-1 mt-4">
-            <span *ngFor="let s of getStars(); let i = index"
-                  class="material-symbols-outlined text-[15px]"
-                  [class.text-yellow-400]="isFullStar(i+1, getAverageRating(branch.reviews)) || isHalfStar(i+1, getAverageRating(branch.reviews))"
-                  [class.text-gray-300]="!isFullStar(i+1, getAverageRating(branch.reviews)) && !isHalfStar(i+1, getAverageRating(branch.reviews))">
-              star
-            </span>
-            <span class="text-xs text-gray-500 ml-1">{{ branch.reviews.length }} đánh giá</span>
+        <div class="p-6">
+          <div class="flex items-start gap-3 mb-4 text-sm text-gray-600">
+            <span class="mt-0.5 text-bambi-orange">📍</span>
+            <p class="leading-relaxed">{{ branch.address }}</p>
           </div>
-
-          <!-- Action buttons -->
-          <div class="flex gap-3 mt-5">
-            <a *ngIf="branch.mapLink" [href]="branch.mapLink" target="_blank"
-               class="flex-1 py-2.5 border-2 border-orange-100 text-bambi-orange font-bold rounded-xl hover:bg-bambi-orange hover:text-white hover:border-bambi-orange transition-all text-sm text-center flex items-center justify-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">map</span>
-              Xem chỉ đường
+          
+          <div class="flex items-center gap-3 text-sm text-gray-700 mt-auto border-t pt-4">
+            <span class="text-bambi-green">📞</span>
+            <a [href]="'tel:' + branch.phone.replace(' ', '')" class="font-bold hover:text-bambi-orange transition-colors" (click)="$event.stopPropagation()">
+              {{ branch.phone }}
             </a>
-            <button *ngIf="!branch.mapLink"
-               class="flex-1 py-2.5 border-2 border-orange-100 text-bambi-orange font-bold rounded-xl hover:bg-bambi-orange hover:text-white hover:border-bambi-orange transition-all text-sm flex items-center justify-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">map</span>
-              Xem chỉ đường
-            </button>
-            <button *ngIf="branch.reviews && branch.reviews.length > 0"
-                    (click)="openReviewModal(branch)"
-                    class="py-2.5 px-4 border-2 border-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-100 transition-all text-sm flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">reviews</span>
-              Đánh giá
-            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal Xem Đánh giá (giống trang admin) -->
-<div *ngIf="isReviewModalOpen && reviewBranch"
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-     (click)="closeReviewModal()">
-  <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl"
-       (click)="$event.stopPropagation()">
-
-    <!-- Header -->
-    <div class="p-6 border-b border-gray-100 flex justify-between items-start shrink-0">
-      <div>
-        <h3 class="text-xl font-bold text-gray-800">Đánh giá từ phụ huynh</h3>
-        <p class="text-sm text-bambi-orange font-semibold mt-0.5">{{ reviewBranch.name }}</p>
-      </div>
-      <button (click)="closeReviewModal()" class="text-gray-400 hover:text-gray-600 mt-1">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <!-- Summary -->
-    <div class="px-6 py-4 bg-orange-50 border-b border-orange-100 shrink-0">
-      <div class="flex items-center gap-6">
-        <div class="text-center">
-          <div class="text-4xl font-black text-bambi-orange">{{ getAverageRating(reviewBranch.reviews) }}</div>
-          <div class="flex gap-0.5 justify-center mt-1">
-            <span *ngFor="let s of getStars(); let i = index"
-                  class="material-symbols-outlined text-[20px]"
-                  [class.text-yellow-400]="isFullStar(i+1, getAverageRating(reviewBranch.reviews)) || isHalfStar(i+1, getAverageRating(reviewBranch.reviews))"
-                  [class.text-gray-300]="!isFullStar(i+1, getAverageRating(reviewBranch.reviews)) && !isHalfStar(i+1, getAverageRating(reviewBranch.reviews))">
-              star
-            </span>
-          </div>
-          <div class="text-xs text-gray-500 mt-1">{{ reviewBranch.reviews.length }} đánh giá</div>
+  <!-- Modal Overlay -->
+  <div *ngIf="activeBranch" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <!-- Click backdrop to close -->
+    <div class="absolute inset-0" (click)="closeMap()"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 flex-shrink-0">
+        <div>
+          <h3 class="text-2xl font-bold text-bambi-green">{{ activeBranch.name }}</h3>
+          <p class="text-sm text-gray-500 mt-1">{{ activeBranch.address }}</p>
         </div>
-        <div class="flex-1 space-y-1.5">
-          <div *ngFor="let star of [5,4,3,2,1]" class="flex items-center gap-2 text-xs">
-            <span class="text-gray-600 w-4 text-right">{{ star }}</span>
-            <span class="material-symbols-outlined text-yellow-400 text-[13px]">star</span>
-            <div class="flex-1 bg-gray-200 rounded-full h-1.5">
-              <div class="bg-yellow-400 h-1.5 rounded-full transition-all"
-                   [style.width.%]="(reviewBranch.reviews.filter(r => r.rating === star).length / reviewBranch.reviews.length) * 100">
-              </div>
+        <button (click)="closeMap()" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-200 bg-white flex-shrink-0">
+        <button (click)="activeTab = 'map'" 
+                [class]="activeTab === 'map' ? 'text-bambi-green border-b-2 border-bambi-green' : 'text-gray-500 hover:text-bambi-green'"
+                class="flex-1 py-4 text-center font-bold transition-colors uppercase tracking-wider text-sm">
+          📍 Bản đồ vị trí
+        </button>
+        <button (click)="activeTab = 'licenses'" 
+                [class]="activeTab === 'licenses' ? 'text-bambi-green border-b-2 border-bambi-green' : 'text-gray-500 hover:text-bambi-green'"
+                class="flex-1 py-4 text-center font-bold transition-colors uppercase tracking-wider text-sm">
+          📄 Giấy phép hoạt động
+        </button>
+      </div>
+      
+      <!-- Content Area -->
+      <div class="w-full flex-grow relative overflow-y-auto bg-gray-100 min-h-[400px]">
+        
+        <!-- Map Iframe -->
+        <div *ngIf="activeTab === 'map'" class="absolute inset-0 w-full h-full">
+          <iframe 
+            [src]="activeBranch.mapUrl" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+
+        <!-- Licenses Grid -->
+        <div *ngIf="activeTab === 'licenses'" class="p-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div *ngFor="let license of activeBranch.licenses" class="rounded-2xl overflow-hidden shadow-md bg-white p-2">
+              <img [src]="license" alt="Giấy phép hoạt động" class="w-full h-auto object-contain rounded-xl hover:scale-[1.02] transition-transform duration-300">
             </div>
-            <span class="text-gray-400 w-4">{{ reviewBranch.reviews.filter(r => r.rating === star).length }}</span>
+          </div>
+          <div *ngIf="activeBranch.licenses.length === 0" class="text-center py-20 text-gray-500">
+            Đang cập nhật giấy phép...
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Review list -->
-    <div class="overflow-y-auto flex-1 p-6 space-y-4">
-      <div *ngFor="let review of reviewBranch.reviews"
-           class="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-        <img *ngIf="review.avatar" [src]="review.avatar" [alt]="review.author"
-             class="w-10 h-10 rounded-full object-cover shrink-0 border-2 border-white shadow-sm">
-        <div *ngIf="!review.avatar"
-             class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-          <span class="material-symbols-outlined text-bambi-orange text-[20px]">person</span>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <span class="font-bold text-gray-800 text-sm">{{ review.author }}</span>
-            <span class="text-xs text-gray-400">{{ review.date }}</span>
-          </div>
-          <div class="flex gap-0.5 my-1">
-            <span *ngFor="let s of getStars(); let i = index"
-                  class="material-symbols-outlined text-[14px]"
-                  [class.text-yellow-400]="i < review.rating"
-                  [class.text-gray-300]="i >= review.rating">
-              star
-            </span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">{{ review.comment }}</p>
-        </div>
       </div>
-    </div>
-
-    <div class="p-4 border-t border-gray-100 bg-gray-50 rounded-b-3xl flex justify-end shrink-0">
-      <button (click)="closeReviewModal()"
-              class="px-6 py-2.5 rounded-xl font-bold bg-bambi-orange text-white hover:bg-orange-600 transition-colors">
-        Đóng
-      </button>
     </div>
   </div>
 </div>
