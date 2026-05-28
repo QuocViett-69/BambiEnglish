@@ -10,7 +10,7 @@ async function bootstrap() {
     credentials: true,
   });
   await app.listen(3000, '0.0.0.0');
-  console.log('🚀 Bambi English API running at http://localhost:3000/api');
+  console.log(' Bambi English API running at http://localhost:3000/api');
 }
 bootstrap();
 
