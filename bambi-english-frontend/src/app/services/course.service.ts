@@ -2,8 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Course } from '../models/course.model';
 
+import { HttpClient } from '@angular/common/http';
+
 @Injectable({ providedIn: 'root' })
 export class CourseService {
+  private baseUrl = 'http://localhost:3000/api';
+
+  constructor(private http: HttpClient) {}
   private mockCourses: Course[] = [
     {
       _id: 'starters',
